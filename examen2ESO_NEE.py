@@ -37,6 +37,7 @@ Era el comienzo de una nueva vida para él.""",
             ]
         },
 
+
         # ============================================================
         # 2. MORFOLOGÍA
         # ============================================================
@@ -77,6 +78,7 @@ Era el comienzo de una nueva vida para él.""",
             }
         ],
 
+
         # ============================================================
         # 3. DETERMINANTES Y PRONOMBRES
         # ============================================================
@@ -93,6 +95,7 @@ Era el comienzo de una nueva vida para él.""",
                 "enunciado": "La palabra **Nadie** es..."
             }
         ],
+
 
         # ============================================================
         # 4. SEMÁNTICA
@@ -115,6 +118,7 @@ Era el comienzo de una nueva vida para él.""",
                 "enunciado": "**Hoja** (árbol / papel) → ¿qué fenómeno semántico aparece?"
             }
         ],
+
 
         # ============================================================
         # 5. TIPOS DE TEXTO
@@ -140,18 +144,12 @@ Era el comienzo de una nueva vida para él.""",
             ]
         },
 
+
         # ============================================================
         # 6. LITERATURA
         # ============================================================
 
         "literatura": {
-
-            # 10A 10B 10A 10B
-            # Se mantienen sinalefas reales:
-            # sobre_el / sobre_el / mira_el
-            # y rima consonante:
-            # mar / mar
-            # cielo / cielo
 
             "poema": """La luna resplandece sobre el mar,
 
@@ -188,6 +186,7 @@ La noche oscura mira el cielo.""",
                 }
             ]
         },
+
 
         # ============================================================
         # 7. SINTAXIS
@@ -237,6 +236,7 @@ La noche oscura mira el cielo.""",
                 "enunciado": "Indica la **modalidad oracional**."
             }
         ],
+
 
         # ============================================================
         # 8. DIÁLOGO
