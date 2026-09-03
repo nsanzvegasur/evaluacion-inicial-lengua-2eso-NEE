@@ -1,4 +1,3 @@
-```python
 EXAMEN = {
     "2ESO_NEE": {
 
@@ -37,6 +36,7 @@ Era el comienzo de una nueva vida para él.""",
                 }
             ]
         },
+
 
         # ============================================================
         # 2. MORFOLOGÍA
@@ -78,8 +78,9 @@ Era el comienzo de una nueva vida para él.""",
             }
         ],
 
+
         # ============================================================
-        # 2.2. DETERMINANTES Y PRONOMBRES
+        # 3. DETERMINANTES Y PRONOMBRES
         # ============================================================
 
         "determinantes_pronombres": [
@@ -95,30 +96,32 @@ Era el comienzo de una nueva vida para él.""",
             }
         ],
 
+
         # ============================================================
-        # 3. SEMÁNTICA
+        # 4. SEMÁNTICA
         # ============================================================
 
         "semantica": [
             {
                 "id": "s1",
                 "elemento": "Frío / calor",
-                "enunciado": "**Frío / calor** → relación semántica"
+                "enunciado": "**Frío / calor** → ¿qué relación semántica tienen?"
             },
             {
                 "id": "s2",
                 "elemento": "Perro, gato, caballo",
-                "enunciado": "**Perro, gato, caballo** → relación semántica"
+                "enunciado": "**Perro, gato, caballo** → ¿qué relación semántica tienen?"
             },
             {
                 "id": "s3",
                 "elemento": "Hoja (árbol / papel)",
-                "enunciado": "**Hoja** (árbol / papel) → relación semántica"
+                "enunciado": "**Hoja** (árbol / papel) → ¿qué fenómeno semántico aparece?"
             }
         ],
 
+
         # ============================================================
-        # 4. TIPOS DE TEXTO
+        # 5. TIPOS DE TEXTO
         # ============================================================
 
         "textos": {
@@ -126,6 +129,7 @@ Era el comienzo de una nueva vida para él.""",
 
             "textos": {
                 "A": "Apaga el horno y deja reposar la masa.",
+
                 "B": "Los mamíferos son animales vertebrados que alimentan a sus crías con leche."
             },
 
@@ -141,8 +145,9 @@ Era el comienzo de una nueva vida para él.""",
             ]
         },
 
+
         # ============================================================
-        # 5. LITERATURA
+        # 6. LITERATURA
         # ============================================================
 
         "literatura": {
@@ -183,46 +188,67 @@ Y la noche se cubre de hielo.""",
             ]
         },
 
+
         # ============================================================
-        # 6. SINTAXIS
+        # 7. SINTAXIS
         # ============================================================
 
         "sintaxis": [
+
+            # --------------------------------------------------------
+            # FRASE U ORACIÓN: 3 preguntas
+            # --------------------------------------------------------
 
             {
                 "id": "x1",
                 "frase": "Buenas tardes",
                 "enunciado": "¿Es **frase u oración**?"
             },
+
             {
                 "id": "x2",
                 "frase": "El perro ladra",
                 "enunciado": "¿Es **frase u oración**?"
             },
+
             {
                 "id": "x3",
+                "frase": "Mi hermano estudia",
+                "enunciado": "¿Es **frase u oración**?"
+            },
+
+            # --------------------------------------------------------
+            # MODALIDAD ORACIONAL: 4 preguntas
+            # --------------------------------------------------------
+
+            {
+                "id": "x4",
                 "frase": "¿Vienes conmigo?",
                 "enunciado": "Indica la **modalidad oracional**."
             },
+
             {
-                "id": "x4",
+                "id": "x5",
                 "frase": "¡Qué frío hace!",
                 "enunciado": "Indica la **modalidad oracional**."
             },
-            {
-                "id": "x5",
-                "frase": "Mañana iremos al cine",
-                "enunciado": "Indica la **modalidad oracional**."
-            },
+
             {
                 "id": "x6",
-                "frase": "Cierra la puerta",
+                "frase": "Mañana iremos al cine.",
+                "enunciado": "Indica la **modalidad oracional**."
+            },
+
+            {
+                "id": "x7",
+                "frase": "Cierra la puerta.",
                 "enunciado": "Indica la **modalidad oracional**."
             }
         ],
 
+
         # ============================================================
-        # 7. DIÁLOGO
+        # 8. DIÁLOGO
         # ============================================================
 
         "dialogo": {
@@ -239,16 +265,19 @@ Carlos: Perfecto, allí estaremos más tranquilos.""",
                     "id": "d1",
                     "enunciado": "1. Escribe los **personajes** que hablan."
                 },
+
                 {
                     "id": "d2",
                     "enunciado": "2. ¿Cuántas **intervenciones** hay?"
                 },
+
                 {
                     "id": "d3",
-                    "enunciado": "3. Pasa esta frase a **estilo indirecto**:\n\nCarlos: «Sí, lo hice ayer por la tarde»."
+                    "enunciado": """3. Pasa esta frase a **estilo indirecto**:
+
+Carlos: «Sí, lo hice ayer por la tarde»."""
                 }
             ]
         }
     }
 }
-```
