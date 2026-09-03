@@ -146,13 +146,10 @@ Era el comienzo de una nueva vida para él.""",
 
         "literatura": {
 
-            # Esquema métrico esperado:
             # 10A 10B 10A 10B
-            #
-            # Se mantienen las sinalefas:
+            # Se mantienen sinalefas reales:
             # sobre_el / sobre_el / mira_el
-            #
-            # Rima consonante:
+            # y rima consonante:
             # mar / mar
             # cielo / cielo
 
@@ -198,10 +195,6 @@ La noche oscura mira el cielo.""",
 
         "sintaxis": [
 
-            # -------------------------
-            # 7.1. Frase u oración
-            # -------------------------
-
             {
                 "id": "x1",
                 "frase": "Buenas tardes",
@@ -219,10 +212,6 @@ La noche oscura mira el cielo.""",
                 "frase": "Mi hermano estudia",
                 "enunciado": "¿Es **frase u oración**?"
             },
-
-            # -------------------------
-            # 7.2. Modalidad oracional
-            # -------------------------
 
             {
                 "id": "x4",
