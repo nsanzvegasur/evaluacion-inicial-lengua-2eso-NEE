@@ -37,7 +37,6 @@ Era el comienzo de una nueva vida para él.""",
             ]
         },
 
-
         # ============================================================
         # 2. MORFOLOGÍA
         # ============================================================
@@ -78,7 +77,6 @@ Era el comienzo de una nueva vida para él.""",
             }
         ],
 
-
         # ============================================================
         # 3. DETERMINANTES Y PRONOMBRES
         # ============================================================
@@ -95,7 +93,6 @@ Era el comienzo de una nueva vida para él.""",
                 "enunciado": "La palabra **Nadie** es..."
             }
         ],
-
 
         # ============================================================
         # 4. SEMÁNTICA
@@ -118,7 +115,6 @@ Era el comienzo de una nueva vida para él.""",
                 "enunciado": "**Hoja** (árbol / papel) → ¿qué fenómeno semántico aparece?"
             }
         ],
-
 
         # ============================================================
         # 5. TIPOS DE TEXTO
@@ -144,17 +140,19 @@ Era el comienzo de una nueva vida para él.""",
             ]
         },
 
-
         # ============================================================
         # 6. LITERATURA
         # ============================================================
 
         "literatura": {
 
+            # Esquema métrico esperado:
             # 10A 10B 10A 10B
-            # Se mantienen sinalefas reales:
+            #
+            # Se mantienen las sinalefas:
             # sobre_el / sobre_el / mira_el
-            # y rima consonante:
+            #
+            # Rima consonante:
             # mar / mar
             # cielo / cielo
 
@@ -194,12 +192,15 @@ La noche oscura mira el cielo.""",
             ]
         },
 
-
         # ============================================================
         # 7. SINTAXIS
         # ============================================================
 
         "sintaxis": [
+
+            # -------------------------
+            # 7.1. Frase u oración
+            # -------------------------
 
             {
                 "id": "x1",
@@ -218,6 +219,10 @@ La noche oscura mira el cielo.""",
                 "frase": "Mi hermano estudia",
                 "enunciado": "¿Es **frase u oración**?"
             },
+
+            # -------------------------
+            # 7.2. Modalidad oracional
+            # -------------------------
 
             {
                 "id": "x4",
@@ -244,7 +249,6 @@ La noche oscura mira el cielo.""",
             }
         ],
 
-
         # ============================================================
         # 8. DIÁLOGO
         # ============================================================
@@ -261,7 +265,7 @@ Carlos: Perfecto, allí estaremos más tranquilos.""",
             "preguntas": [
                 {
                     "id": "d1",
-                    "enunciado": "1. Escribe los **personajes** que hablan."
+                    "enunciado": "1. Escribe los **interlocutores** que hablan."
                 },
                 {
                     "id": "d2",
