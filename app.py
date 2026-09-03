@@ -52,181 +52,90 @@ st.markdown(
     """
     <style>
 
-    /* --------------------------------------------------------
-       FUENTE GENERAL
-       Open Sans: más adecuada para lectura accesible
-       -------------------------------------------------------- */
+    @import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap');
 
     html, body, [class*="css"] {
-        font-family: "Open Sans", Arial, sans-serif;
+        font-family: 'Open Sans', Verdana, Arial, sans-serif !important;
     }
 
     .stApp {
-        font-family: "Open Sans", Arial, sans-serif;
+        font-family: 'Open Sans', Verdana, Arial, sans-serif !important;
     }
 
-
-    /* --------------------------------------------------------
-       TAMAÑO BASE
-       Aproximadamente equivalente al Verdana 14 del centro
-       -------------------------------------------------------- */
-
-    p, li, label, .stMarkdown {
-        font-size: 14px !important;
+    /* Texto general */
+    .stMarkdown,
+    .stText,
+    p,
+    li,
+    label,
+    .stCaption {
+        font-family: 'Open Sans', Verdana, Arial, sans-serif !important;
+        font-size: 16px !important;
         line-height: 1.65 !important;
     }
 
-
-    /* --------------------------------------------------------
-       TÍTULO
-       -------------------------------------------------------- */
-
-    .titulo-principal {
-        font-size: 30px !important;
-        font-weight: 700;
-        line-height: 1.3;
-        margin-bottom: 8px;
-    }
-
-
-    .subtitulo-principal {
-        font-size: 15px !important;
-        line-height: 1.6;
-        margin-bottom: 25px;
-    }
-
-
-    /* --------------------------------------------------------
-       ENCABEZADOS DE BLOQUE
-       -------------------------------------------------------- */
-
-    h2 {
-        font-size: 23px !important;
-        line-height: 1.4 !important;
-        margin-top: 30px !important;
-        margin-bottom: 20px !important;
-    }
-
-    h3 {
-        font-size: 19px !important;
-        line-height: 1.5 !important;
-        margin-top: 22px !important;
-        margin-bottom: 14px !important;
-    }
-
-
-    /* --------------------------------------------------------
-       PREGUNTAS
-       -------------------------------------------------------- */
-
+    /* Títulos de las preguntas */
     .pregunta {
-        font-size: 16px !important;
-        line-height: 1.65 !important;
-        margin-top: 24px;
-        margin-bottom: 9px;
+        font-family: 'Open Sans', Verdana, Arial, sans-serif !important;
+        font-size: 19px !important;
+        font-weight: 600 !important;
+        line-height: 1.55 !important;
+        margin-top: 22px !important;
+        margin-bottom: 10px !important;
     }
 
-
-    .enunciado-grande {
-        font-size: 16px !important;
-        line-height: 1.65 !important;
-        margin-bottom: 10px;
-    }
-
-
-    /* --------------------------------------------------------
-       TEXTO DEL EXAMEN
-       -------------------------------------------------------- */
-
-    .texto-examen {
-        font-size: 15px !important;
-        line-height: 1.8 !important;
-        padding: 18px;
-        margin: 10px 0 25px 0;
+    /* Texto de los ejercicios */
+    .ejercicio {
+        font-family: 'Open Sans', Verdana, Arial, sans-serif !important;
+        font-size: 18px !important;
+        line-height: 1.7 !important;
+        padding: 14px 18px !important;
+        margin: 12px 0 18px 0 !important;
         border-radius: 8px;
-        border: 1px solid #dddddd;
+        border: 1px solid rgba(128,128,128,0.25);
     }
 
-
-    /* --------------------------------------------------------
-       PALABRAS / FRASES QUE DEBE VER EL ALUMNO
-       -------------------------------------------------------- */
-
-    .elemento-pregunta {
-        font-size: 16px !important;
-        font-weight: 600;
-        line-height: 1.65 !important;
-        margin-top: 18px;
-        margin-bottom: 8px;
-    }
-
-
-    /* --------------------------------------------------------
-       SEPARACIÓN ENTRE PREGUNTAS
-       -------------------------------------------------------- */
-
-    .separador-pregunta {
-        height: 14px;
-    }
-
-
-    /* --------------------------------------------------------
-       BLOQUES
-       -------------------------------------------------------- */
-
-    .bloque-examen {
-        padding: 10px 0 20px 0;
-    }
-
-
-    /* --------------------------------------------------------
-       BOTÓN FINAL
-       -------------------------------------------------------- */
-
-    div.stButton > button {
-        font-size: 17px !important;
+    /* Enunciados de sección */
+    .subtitulo {
+        font-family: 'Open Sans', Verdana, Arial, sans-serif !important;
+        font-size: 21px !important;
         font-weight: 700 !important;
-        padding: 0.7rem 1rem !important;
-        min-height: 52px !important;
+        margin-top: 30px !important;
+        margin-bottom: 18px !important;
     }
 
-
-    /* --------------------------------------------------------
-       CAMPOS
-       -------------------------------------------------------- */
-
-    textarea,
-    input {
-        font-family: "Open Sans", Arial, sans-serif !important;
-        font-size: 15px !important;
-        line-height: 1.5 !important;
+    /* Separación entre bloques */
+    .bloque-examen {
+        margin-top: 30px !important;
+        margin-bottom: 35px !important;
+        padding-bottom: 20px !important;
     }
 
+    /* Campos de respuesta */
+    .stTextInput input,
+    .stTextArea textarea,
+    .stSelectbox select {
+        font-family: 'Open Sans', Verdana, Arial, sans-serif !important;
+        font-size: 16px !important;
+    }
 
-    /* --------------------------------------------------------
-       SELECTBOX
-       -------------------------------------------------------- */
-
+    /* Opciones de los selectbox */
     div[data-baseweb="select"] {
-        font-size: 15px !important;
+        font-size: 16px !important;
     }
 
-
-    /* --------------------------------------------------------
-       RESULTADOS
-       -------------------------------------------------------- */
-
-    .resultado-final {
-        font-size: 24px !important;
-        font-weight: 700;
-        margin: 20px 0;
+    /* Botones */
+    .stButton button {
+        font-family: 'Open Sans', Verdana, Arial, sans-serif !important;
+        font-size: 17px !important;
+        font-weight: 600 !important;
+        padding: 10px 22px !important;
     }
 
     </style>
     """,
-    unsafe_allow_html=True,
+    unsafe_allow_html=True
 )
-
 
 # ============================================================
 # NORMALIZACIÓN
