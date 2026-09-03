@@ -7,6 +7,7 @@ from datetime import datetime
 
 import pandas as pd
 import streamlit as st
+import plotly.graph_objects as go
 
 from analytics import radar_chart, generar_perfil
 from examen2ESO_NEE import EXAMEN
@@ -21,7 +22,6 @@ st.set_page_config(
     page_icon="📚",
     layout="centered",
 )
-
 
 CSV_FILE = "results.csv"
 
@@ -54,88 +54,238 @@ st.markdown(
 
     @import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap');
 
-    html, body, [class*="css"] {
-        font-family: 'Open Sans', Verdana, Arial, sans-serif !important;
-    }
+    /* ========================================================
+       FUENTE GENERAL
+       ======================================================== */
 
-    .stApp {
-        font-family: 'Open Sans', Verdana, Arial, sans-serif !important;
-    }
-
-    /* Texto general */
+    html,
+    body,
+    [class*="css"],
+    .stApp,
     .stMarkdown,
     .stText,
     p,
     li,
     label,
-    .stCaption {
+    span,
+    div {
         font-family: 'Open Sans', Verdana, Arial, sans-serif !important;
-        font-size: 16px !important;
-        line-height: 1.65 !important;
     }
 
-    /* Títulos de las preguntas */
+
+    /* ========================================================
+       TÍTULO PRINCIPAL
+       ======================================================== */
+
+    .titulo-principal {
+        font-family: 'Open Sans', Verdana, Arial, sans-serif !important;
+        font-size: 30px !important;
+        font-weight: 700 !important;
+        line-height: 1.3 !important;
+        margin-bottom: 8px !important;
+    }
+
+    .subtitulo-principal {
+        font-family: 'Open Sans', Verdana, Arial, sans-serif !important;
+        font-size: 18px !important;
+        line-height: 1.6 !important;
+        margin-bottom: 28px !important;
+    }
+
+
+    /* ========================================================
+       TÍTULOS DE SECCIÓN
+       ======================================================== */
+
+    h1, h2, h3 {
+        font-family: 'Open Sans', Verdana, Arial, sans-serif !important;
+    }
+
+    h1 {
+        font-size: 27px !important;
+        line-height: 1.4 !important;
+    }
+
+    h2 {
+        font-size: 24px !important;
+        line-height: 1.4 !important;
+    }
+
+    h3 {
+        font-size: 21px !important;
+        line-height: 1.4 !important;
+    }
+
+    .subtitulo {
+        font-family: 'Open Sans', Verdana, Arial, sans-serif !important;
+        font-size: 22px !important;
+        font-weight: 700 !important;
+        line-height: 1.5 !important;
+        margin-top: 30px !important;
+        margin-bottom: 20px !important;
+    }
+
+
+    /* ========================================================
+       TEXTO DEL EXAMEN
+       ======================================================== */
+
+    .texto-examen {
+        font-family: 'Open Sans', Verdana, Arial, sans-serif !important;
+        font-size: 18px !important;
+        line-height: 1.8 !important;
+        margin-top: 12px !important;
+        margin-bottom: 25px !important;
+        padding: 18px !important;
+        border-radius: 8px;
+        border: 1px solid rgba(128, 128, 128, 0.25);
+    }
+
+
+    /* ========================================================
+       PREGUNTAS
+       ======================================================== */
+
     .pregunta {
         font-family: 'Open Sans', Verdana, Arial, sans-serif !important;
         font-size: 19px !important;
         font-weight: 600 !important;
-        line-height: 1.55 !important;
-        margin-top: 22px !important;
+        line-height: 1.6 !important;
+        margin-top: 24px !important;
         margin-bottom: 10px !important;
     }
 
-    /* Texto de los ejercicios */
+    .pregunta strong {
+        font-weight: 700 !important;
+    }
+
+
+    /* ========================================================
+       ELEMENTOS / FRASES / TEXTOS
+       ======================================================== */
+
+    .elemento-pregunta {
+        font-family: 'Open Sans', Verdana, Arial, sans-serif !important;
+        font-size: 18px !important;
+        line-height: 1.7 !important;
+        margin-top: 18px !important;
+        margin-bottom: 12px !important;
+    }
+
     .ejercicio {
         font-family: 'Open Sans', Verdana, Arial, sans-serif !important;
         font-size: 18px !important;
         line-height: 1.7 !important;
-        padding: 14px 18px !important;
-        margin: 12px 0 18px 0 !important;
+        padding: 16px 18px !important;
+        margin: 14px 0 18px 0 !important;
         border-radius: 8px;
-        border: 1px solid rgba(128,128,128,0.25);
+        border: 1px solid rgba(128, 128, 128, 0.25);
     }
 
-    /* Enunciados de sección */
-    .subtitulo {
-        font-family: 'Open Sans', Verdana, Arial, sans-serif !important;
-        font-size: 21px !important;
+    .ejercicio strong {
         font-weight: 700 !important;
-        margin-top: 30px !important;
-        margin-bottom: 18px !important;
     }
 
-    /* Separación entre bloques */
+
+    /* ========================================================
+       BLOQUES
+       ======================================================== */
+
     .bloque-examen {
         margin-top: 30px !important;
-        margin-bottom: 35px !important;
-        padding-bottom: 20px !important;
+        margin-bottom: 40px !important;
+        padding-bottom: 25px !important;
     }
 
-    /* Campos de respuesta */
+    .separador-pregunta {
+        height: 10px !important;
+    }
+
+
+    /* ========================================================
+       CAMPOS DE RESPUESTA
+       ======================================================== */
+
     .stTextInput input,
-    .stTextArea textarea,
-    .stSelectbox select {
-        font-family: 'Open Sans', Verdana, Arial, sans-serif !important;
-        font-size: 16px !important;
-    }
-
-    /* Opciones de los selectbox */
-    div[data-baseweb="select"] {
-        font-size: 16px !important;
-    }
-
-    /* Botones */
-    .stButton button {
+    .stTextArea textarea {
         font-family: 'Open Sans', Verdana, Arial, sans-serif !important;
         font-size: 17px !important;
-        font-weight: 600 !important;
-        padding: 10px 22px !important;
+        line-height: 1.5 !important;
+    }
+
+    div[data-baseweb="select"],
+    div[data-baseweb="select"] * {
+        font-family: 'Open Sans', Verdana, Arial, sans-serif !important;
+        font-size: 17px !important;
+    }
+
+    textarea {
+        font-size: 17px !important;
+    }
+
+
+    /* ========================================================
+       ETIQUETAS DE LOS CAMPOS
+       ======================================================== */
+
+    .stTextInput label,
+    .stTextArea label,
+    .stSelectbox label {
+        font-family: 'Open Sans', Verdana, Arial, sans-serif !important;
+        font-size: 16px !important;
+    }
+
+
+    /* ========================================================
+       AYUDAS
+       ======================================================== */
+
+    .stTooltipIcon {
+        font-size: 16px !important;
+    }
+
+
+    /* ========================================================
+       BOTONES
+       ======================================================== */
+
+    .stButton button {
+        font-family: 'Open Sans', Verdana, Arial, sans-serif !important;
+        font-size: 18px !important;
+        font-weight: 700 !important;
+        padding: 12px 22px !important;
+        min-height: 52px !important;
+    }
+
+
+    /* ========================================================
+       RESULTADO FINAL
+       ======================================================== */
+
+    .resultado-final {
+        font-family: 'Open Sans', Verdana, Arial, sans-serif !important;
+        font-size: 27px !important;
+        font-weight: 700 !important;
+        line-height: 1.5 !important;
+        margin: 15px 0 20px 0 !important;
+    }
+
+
+    /* ========================================================
+       CAPTIONS
+       ======================================================== */
+
+    .stCaption {
+        font-family: 'Open Sans', Verdana, Arial, sans-serif !important;
+        font-size: 15px !important;
+        line-height: 1.6 !important;
     }
 
     </style>
     """,
-    unsafe_allow_html=True
+    unsafe_allow_html=True,
 )
+
 
 # ============================================================
 # NORMALIZACIÓN
@@ -150,11 +300,12 @@ def normalizar(valor):
 
     texto = unicodedata.normalize(
         "NFD",
-        texto
+        texto,
     )
 
     texto = "".join(
-        c for c in texto
+        c
+        for c in texto
         if unicodedata.category(c) != "Mn"
     )
 
@@ -164,7 +315,7 @@ def normalizar(valor):
     texto = re.sub(
         r"\s+",
         " ",
-        texto
+        texto,
     )
 
     return texto.strip()
@@ -182,7 +333,7 @@ def dividir_lista(valor):
 
     partes = re.split(
         r"[,;\n]+",
-        texto
+        texto,
     )
 
     return [
@@ -232,13 +383,13 @@ def normalizar_metrica(valor):
     texto = re.sub(
         r"[;,/]+",
         " ",
-        texto
+        texto,
     )
 
     texto = re.sub(
         r"\s+",
         " ",
-        texto
+        texto,
     )
 
     return texto.strip()
@@ -248,11 +399,7 @@ def corregir_metrica(valor):
 
     normalizada = normalizar_metrica(valor)
 
-    opciones = {
-        "10A 10B 10A 10B",
-    }
-
-    return normalizada in opciones
+    return normalizada == "10A 10B 10A 10B"
 
 
 # ============================================================
@@ -263,25 +410,28 @@ def corregir_comprension(respuestas):
 
     puntos = 0.0
 
+    # --------------------------------------------------------
     # c1: lugar
+    # --------------------------------------------------------
+
     if contiene(
         respuestas.get("c1", ""),
         "estacion",
-        "estación",
         "tren",
         "vagon",
-        "vagón"
     ):
         puntos += 0.5
 
+    # --------------------------------------------------------
     # c2: personajes
+    # --------------------------------------------------------
+
     personajes = dividir_lista(
         respuestas.get("c2", "")
     )
 
     tiene_hombre = any(
-        "hombre" in x or
-        "joven" in x
+        "hombre" in x or "joven" in x
         for x in personajes
     )
 
@@ -295,31 +445,33 @@ def corregir_comprension(respuestas):
         / 2
     )
 
+    # --------------------------------------------------------
     # c3: cuándo
+    # --------------------------------------------------------
+
     if contiene(
         respuestas.get("c3", ""),
         "temprano",
         "madrugada",
-        "amanecer"
+        "amanecer",
     ):
         puntos += 0.5
 
+    # --------------------------------------------------------
     # c4: acciones
+    # --------------------------------------------------------
+
     acciones = dividir_lista(
         respuestas.get("c4", "")
     )
 
     criterios_acciones = [
         "llego",
-        "llegó",
         "viajaban",
         "llevaba",
         "parecia",
-        "parecía",
         "dormia",
-        "dormía",
         "bajo",
-        "bajó",
     ]
 
     encontradas = set()
@@ -336,20 +488,73 @@ def corregir_comprension(respuestas):
                     normalizar(criterio)
                 )
 
-    puntos += min(
-        len(encontradas),
-        3
-    ) / 3 * 0.5
+    puntos += (
+        min(len(encontradas), 3)
+        / 3
+        * 0.5
+    )
 
     return round(
         min(puntos, 2.0),
-        2
+        2,
     )
 
 
 # ============================================================
 # CORRECCIÓN DE MORFOLOGÍA
 # ============================================================
+
+def normalizar_morfemas(valor):
+
+    if valor is None:
+        return []
+
+    texto = normalizar(valor)
+
+    texto = re.sub(
+        r"[-–—/]+",
+        " ",
+        texto,
+    )
+
+    partes = re.split(
+        r"[\s,;]+",
+        texto,
+    )
+
+    return [
+        p.strip()
+        for p in partes
+        if p.strip()
+    ]
+
+
+def corregir_morfemas(valor, esperados):
+
+    partes = normalizar_morfemas(valor)
+
+    if not partes:
+        return False
+
+    esperados_normalizados = [
+        normalizar(x)
+        for x in esperados
+    ]
+
+    # Caso de un único morfema
+    if len(esperados_normalizados) == 1:
+        return (
+            partes == esperados_normalizados
+            or normalizar(valor)
+            in esperados_normalizados
+        )
+
+    # Caso de varios morfemas
+    return (
+        set(partes)
+        == set(esperados_normalizados)
+    )
+
 
 def corregir_morfologia(respuestas):
 
@@ -361,23 +566,31 @@ def corregir_morfologia(respuestas):
             "Lexema": ["silenci", "silenc"],
             "Morfemas": ["o"],
             "Estructura": ["simple"],
-            "Categoría gramatical": ["sustantivo", "nombre"],
+            "Categoría gramatical": [
+                "sustantivo",
+                "nombre",
+            ],
             "V/I": ["variable"],
         },
 
         "m2": {
             "Lexema": ["mochil"],
-            "Morfemas": ["a", "s", "a-s", "as"],
+            "Morfemas": ["a", "s"],
             "Estructura": ["simple"],
-            "Categoría gramatical": ["sustantivo", "nombre"],
+            "Categoría gramatical": [
+                "sustantivo",
+                "nombre",
+            ],
             "V/I": ["variable"],
         },
 
         "m3": {
             "Lexema": ["conoc"],
-            "Morfemas": ["des", "ido", "des-ido", "des ido"],
+            "Morfemas": ["des", "ido"],
             "Estructura": ["derivada"],
-            "Categoría gramatical": ["adjetivo"],
+            "Categoría gramatical": [
+                "adjetivo",
+            ],
             "V/I": ["variable"],
         },
     }
@@ -388,7 +601,7 @@ def corregir_morfologia(respuestas):
 
         datos = respuestas.get(
             palabra_id,
-            {}
+            {},
         )
 
         aciertos = 0
@@ -397,13 +610,24 @@ def corregir_morfologia(respuestas):
 
             respuesta = datos.get(
                 campo,
-                ""
+                "",
             )
 
-            if exacta(
-                respuesta,
-                *alternativas
-            ):
+            if campo == "Morfemas":
+
+                correcto = corregir_morfemas(
+                    respuesta,
+                    alternativas,
+                )
+
+            else:
+
+                correcto = exacta(
+                    respuesta,
+                    *alternativas,
+                )
+
+            if correcto:
                 aciertos += 1
 
         puntos += (
@@ -414,7 +638,7 @@ def corregir_morfologia(respuestas):
 
     return round(
         min(puntos, 2.0),
-        2
+        2,
     )
 
 
@@ -428,13 +652,13 @@ def corregir_determinantes(respuestas):
 
     if exacta(
         respuestas.get("dp1", ""),
-        "determinante"
+        "determinante",
     ):
         puntos += 0.25
 
     if exacta(
         respuestas.get("dp2", ""),
-        "pronombre"
+        "pronombre",
     ):
         puntos += 0.25
 
@@ -451,25 +675,25 @@ def corregir_semantica(respuestas):
 
     if exacta(
         respuestas.get("s1", ""),
-        "antonimia"
+        "antonimia",
     ):
         puntos += 1 / 3
 
     if exacta(
         respuestas.get("s2", ""),
-        "campo semántico"
+        "campo semántico",
     ):
         puntos += 1 / 3
 
     if exacta(
         respuestas.get("s3", ""),
-        "polisemia"
+        "polisemia",
     ):
         puntos += 1 / 3
 
     return round(
         puntos,
-        2
+        2,
     )
 
 
@@ -483,13 +707,13 @@ def corregir_textos(respuestas):
 
     if exacta(
         respuestas.get("t1", ""),
-        "instructivo"
+        "instructivo",
     ):
         puntos += 0.5
 
     if exacta(
         respuestas.get("t2", ""),
-        "expositivo"
+        "expositivo",
     ):
         puntos += 0.5
 
@@ -505,41 +729,47 @@ def corregir_literatura(respuestas):
     puntos = 0.0
 
     # l1: versos
+
     if exacta(
         respuestas.get("l1", ""),
-        "4"
+        "4",
     ):
         puntos += 0.25
 
     # l2: arte mayor
+
     if exacta(
         respuestas.get("l2", ""),
-        "arte mayor"
+        "arte mayor",
     ):
         puntos += 0.25
 
     # l3: métrica
+
     if corregir_metrica(
         respuestas.get("l3", "")
     ):
         puntos += 0.35
 
     # l4: rima
+
     if exacta(
         respuestas.get("l4", ""),
-        "consonante"
+        "consonante",
     ):
         puntos += 0.25
 
     # l5: sinalefa
+
     if contiene(
         respuestas.get("l5", ""),
         "sobre el",
-        "mira el"
+        "mira el",
     ):
         puntos += 0.45
 
     # l6: personificación
+
     if contiene(
         respuestas.get("l6", ""),
         "viento susurra",
@@ -549,7 +779,7 @@ def corregir_literatura(respuestas):
 
     return round(
         min(puntos, 2.0),
-        2
+        2,
     )
 
 
@@ -561,9 +791,6 @@ def corregir_sintaxis(respuestas):
 
     puntos = 0.0
 
-    # El examen actual contiene x1-x7.
-    # Se corrigen únicamente los elementos existentes.
-
     correctas = {
         "x1": "frase",
         "x2": "oración",
@@ -574,25 +801,24 @@ def corregir_sintaxis(respuestas):
         "x7": "exhortativa",
     }
 
-    if not correctas:
-        return 0.0
-
-    valor_por_pregunta = 1.0 / len(correctas)
+    valor_por_pregunta = (
+        1.0 / len(correctas)
+    )
 
     for pregunta_id, correcta in correctas.items():
 
-        if pregunta_id not in respuestas:
-            continue
-
         if exacta(
-            respuestas.get(pregunta_id, ""),
-            correcta
+            respuestas.get(
+                pregunta_id,
+                "",
+            ),
+            correcta,
         ):
             puntos += valor_por_pregunta
 
     return round(
         puntos,
-        2
+        2,
     )
 
 
@@ -609,23 +835,28 @@ def corregir_estilo_indirecto(valor):
 
     criterios = [
         "carlos" in texto,
+
         any(
             verbo in texto
             for verbo in [
                 "dijo",
                 "afirmo",
-                "afirmó",
                 "comento",
-                "comentó",
                 "respondio",
-                "respondió",
             ]
         ),
+
         "que" in texto,
-        "habia hecho" in texto,
-        "lo habia hecho" in texto,
-        "día anterior" in texto,
-        "dia anterior" in texto,
+
+        (
+            "habia hecho" in texto
+            or "lo habia hecho" in texto
+        ),
+
+        (
+            "dia anterior" in texto
+            or "anteriormente" in texto
+        ),
     ]
 
     return sum(criterios) / len(criterios)
@@ -650,13 +881,16 @@ def corregir_dialogo(respuestas):
     )
 
     puntos += 0.10 * (
-        (int(tiene_lucia) + int(tiene_carlos))
+        (
+            int(tiene_lucia)
+            + int(tiene_carlos)
+        )
         / 2
     )
 
     if exacta(
         respuestas.get("d2", ""),
-        "6"
+        "6",
     ):
         puntos += 0.10
 
@@ -669,7 +903,7 @@ def corregir_dialogo(respuestas):
 
     return round(
         min(puntos, 0.5),
-        2
+        2,
     )
 
 
@@ -681,45 +915,67 @@ def corregir_examen(respuestas):
 
     puntos = {}
 
-    puntos["comprension"] = corregir_comprension(
-        respuestas
+    puntos["comprension"] = (
+        corregir_comprension(
+            respuestas
+        )
     )
 
-    puntos["morfologia"] = corregir_morfologia(
-        respuestas.get("morfologia", {})
+    puntos["morfologia"] = (
+        corregir_morfologia(
+            respuestas.get(
+                "morfologia",
+                {},
+            )
+        )
     )
 
-    puntos["determinantes"] = corregir_determinantes(
-        respuestas
+    puntos["determinantes"] = (
+        corregir_determinantes(
+            respuestas
+        )
     )
 
-    puntos["semantica"] = corregir_semantica(
-        respuestas
+    puntos["semantica"] = (
+        corregir_semantica(
+            respuestas
+        )
     )
 
-    puntos["textos"] = corregir_textos(
-        respuestas
+    puntos["textos"] = (
+        corregir_textos(
+            respuestas
+        )
     )
 
-    puntos["literatura"] = corregir_literatura(
-        respuestas
+    puntos["literatura"] = (
+        corregir_literatura(
+            respuestas
+        )
     )
 
-    puntos["sintaxis"] = corregir_sintaxis(
-        respuestas
+    puntos["sintaxis"] = (
+        corregir_sintaxis(
+            respuestas
+        )
     )
 
-    puntos["dialogo"] = corregir_dialogo(
-        respuestas
+    puntos["dialogo"] = (
+        corregir_dialogo(
+            respuestas
+        )
     )
 
     nota = sum(
         puntos.values()
     )
 
-    return puntos, round(
-        min(nota, 10.0),
-        2
+    return (
+        puntos,
+        round(
+            min(nota, 10.0),
+            2,
+        ),
     )
 
 
@@ -744,12 +1000,15 @@ def cargar_resultados():
         "total",
     ]
 
-    if not os.path.exists(CSV_FILE):
+    if not os.path.exists(
+        CSV_FILE
+    ):
         return pd.DataFrame(
             columns=columnas
         )
 
     try:
+
         df = pd.read_csv(
             CSV_FILE
         )
@@ -757,6 +1016,7 @@ def cargar_resultados():
         return df
 
     except Exception:
+
         return pd.DataFrame(
             columns=columnas
         )
@@ -769,15 +1029,15 @@ def guardar_resultado(fila):
     df = pd.concat(
         [
             df,
-            pd.DataFrame([fila])
+            pd.DataFrame([fila]),
         ],
-        ignore_index=True
+        ignore_index=True,
     )
 
     df.to_csv(
         CSV_FILE,
         index=False,
-        encoding="utf-8-sig"
+        encoding="utf-8-sig",
     )
 
     return df
@@ -789,7 +1049,9 @@ def csv_individual(fila):
 
     writer = csv.DictWriter(
         salida,
-        fieldnames=list(fila.keys())
+        fieldnames=list(
+            fila.keys()
+        ),
     )
 
     writer.writeheader()
@@ -804,9 +1066,10 @@ def csv_individual(fila):
 # COMPARATIVA ANÓNIMA
 # ============================================================
 
-def grafico_comparativa_anónima(
+def grafico_comparativa_anonima(
     puntos,
-    df
+    df,
+    grupo_alumno,
 ):
 
     competencias = [
@@ -829,36 +1092,54 @@ def grafico_comparativa_anónima(
 
     alumno = [
         float(
-            puntos.get(c, 0)
+            puntos.get(
+                c,
+                0,
+            )
         )
         for c in competencias
     ]
+
+    # --------------------------------------------------------
+    # Solo resultados del mismo grupo
+    # --------------------------------------------------------
+
+    df_grupo = df.copy()
+
+    if (
+        "group" in df_grupo.columns
+        and grupo_alumno
+    ):
+
+        df_grupo = df_grupo[
+            df_grupo["group"]
+            == grupo_alumno
+        ]
 
     medias = []
 
     for c in competencias:
 
         if (
-            df.empty
-            or c not in df.columns
+            df_grupo.empty
+            or c not in df_grupo.columns
         ):
             medias.append(0)
             continue
 
         serie = pd.to_numeric(
-            df[c],
-            errors="coerce"
+            df_grupo[c],
+            errors="coerce",
         )
 
-        medias.append(
-            float(
-                serie.mean()
+        if serie.dropna().empty:
+            medias.append(0)
+        else:
+            medias.append(
+                float(
+                    serie.mean()
+                )
             )
-            if not serie.dropna().empty
-            else 0
-        )
-
-    import plotly.graph_objects as go
 
     fig = go.Figure()
 
@@ -866,7 +1147,7 @@ def grafico_comparativa_anónima(
         go.Bar(
             x=nombres,
             y=alumno,
-            name="Tu resultado"
+            name="Tu resultado",
         )
     )
 
@@ -874,7 +1155,7 @@ def grafico_comparativa_anónima(
         go.Bar(
             x=nombres,
             y=medias,
-            name="Media del grupo"
+            name="Media del grupo",
         )
     )
 
@@ -883,13 +1164,13 @@ def grafico_comparativa_anónima(
         barmode="group",
         yaxis=dict(
             title="Puntuación",
-            range=[0, 2.5]
+            range=[0, 2.0],
         ),
         margin=dict(
             l=40,
             r=40,
             t=60,
-            b=80
+            b=80,
         ),
     )
 
@@ -902,7 +1183,7 @@ def grafico_comparativa_anónima(
 
 if st.session_state.get(
     "examen_enviado",
-    False
+    False,
 ):
 
     puntos = st.session_state[
@@ -918,13 +1199,17 @@ if st.session_state.get(
     ]
 
     st.markdown(
-        '<div class="titulo-principal">📊 Resultado de la evaluación</div>',
-        unsafe_allow_html=True
+        '<div class="titulo-principal">'
+        '📊 Resultado de la evaluación'
+        '</div>',
+        unsafe_allow_html=True,
     )
 
     st.markdown(
-        f'<div class="resultado-final">Nota final: {nota_final:.2f} / 10</div>',
-        unsafe_allow_html=True
+        f'<div class="resultado-final">'
+        f'Nota final: {nota_final:.2f} / 10'
+        f'</div>',
+        unsafe_allow_html=True,
     )
 
     st.success(
@@ -938,35 +1223,61 @@ if st.session_state.get(
     )
 
     nombres_bloques = [
-        ("comprension", "Comprensión lectora"),
-        ("morfologia", "Morfología"),
-        ("determinantes", "Determinantes y pronombres"),
-        ("semantica", "Semántica"),
-        ("textos", "Tipos de texto"),
-        ("literatura", "Literatura"),
-        ("sintaxis", "Sintaxis"),
-        ("dialogo", "Diálogo"),
+        (
+            "comprension",
+            "Comprensión lectora",
+        ),
+        (
+            "morfologia",
+            "Morfología",
+        ),
+        (
+            "determinantes",
+            "Determinantes y pronombres",
+        ),
+        (
+            "semantica",
+            "Semántica",
+        ),
+        (
+            "textos",
+            "Tipos de texto",
+        ),
+        (
+            "literatura",
+            "Literatura",
+        ),
+        (
+            "sintaxis",
+            "Sintaxis",
+        ),
+        (
+            "dialogo",
+            "Diálogo",
+        ),
     ]
 
     columnas = st.columns(4)
 
     for i, (
         clave,
-        nombre
-    ) in enumerate(nombres_bloques):
+        nombre_bloque,
+    ) in enumerate(
+        nombres_bloques
+    ):
 
         columnas[
             i % 4
         ].metric(
-            nombre,
-            f"{puntos.get(clave, 0):.2f}"
+            nombre_bloque,
+            f"{puntos.get(clave, 0):.2f}",
         )
 
     st.divider()
 
-    # --------------------------------------------------------
+    # ========================================================
     # RADAR
-    # --------------------------------------------------------
+    # ========================================================
 
     st.subheader(
         "Perfil competencial"
@@ -974,32 +1285,55 @@ if st.session_state.get(
 
     datos_radar = {
         "comprension": (
-            puntos.get("comprension", 0)
+            puntos.get(
+                "comprension",
+                0,
+            )
             / PESOS["comprension"]
             * 10
         ),
+
         "morfologia": (
-            puntos.get("morfologia", 0)
+            puntos.get(
+                "morfologia",
+                0,
+            )
             / PESOS["morfologia"]
             * 10
         ),
+
         "semantica": (
-            puntos.get("semantica", 0)
+            puntos.get(
+                "semantica",
+                0,
+            )
             / PESOS["semantica"]
             * 10
         ),
+
         "textos": (
-            puntos.get("textos", 0)
+            puntos.get(
+                "textos",
+                0,
+            )
             / PESOS["textos"]
             * 10
         ),
+
         "literatura": (
-            puntos.get("literatura", 0)
+            puntos.get(
+                "literatura",
+                0,
+            )
             / PESOS["literatura"]
             * 10
         ),
+
         "sintaxis": (
-            puntos.get("sintaxis", 0)
+            puntos.get(
+                "sintaxis",
+                0,
+            )
             / PESOS["sintaxis"]
             * 10
         ),
@@ -1007,17 +1341,17 @@ if st.session_state.get(
 
     fig_radar = radar_chart(
         datos_radar,
-        "Perfil competencial"
+        "Perfil competencial",
     )
 
     st.plotly_chart(
         fig_radar,
-        use_container_width=True
+        use_container_width=True,
     )
 
-    # --------------------------------------------------------
+    # ========================================================
     # PERFIL
-    # --------------------------------------------------------
+    # ========================================================
 
     perfil = generar_perfil(
         datos_radar
@@ -1029,14 +1363,14 @@ if st.session_state.get(
 
     for elemento in perfil:
 
-        st.write(
+        st.markdown(
             f"**{elemento['nombre']}**: "
-            f"{elemento['nivel']}."
+            f"{elemento['nivel']}.",
         )
 
-    # --------------------------------------------------------
+    # ========================================================
     # COMPARATIVA ANÓNIMA
-    # --------------------------------------------------------
+    # ========================================================
 
     df_resultados = cargar_resultados()
 
@@ -1056,19 +1390,22 @@ if st.session_state.get(
             "no se muestran nombres de alumnos."
         )
 
-        figura = grafico_comparativa_anónima(
-            puntos,
-            df_resultados
+        figura = (
+            grafico_comparativa_anonima(
+                puntos,
+                df_resultados,
+                fila["group"],
+            )
         )
 
         st.plotly_chart(
             figura,
-            use_container_width=True
+            use_container_width=True,
         )
 
-    # --------------------------------------------------------
+    # ========================================================
     # DESCARGA CSV
-    # --------------------------------------------------------
+    # ========================================================
 
     st.divider()
 
@@ -1079,14 +1416,16 @@ if st.session_state.get(
     st.download_button(
         "⬇️ Descargar mi resultado CSV",
         data=csv_individual(fila),
-        file_name="resultado_2ESO_NEE.csv",
+        file_name=(
+            "resultado_2ESO_NEE.csv"
+        ),
         mime="text/csv",
         use_container_width=True,
     )
 
-    # --------------------------------------------------------
+    # ========================================================
     # DESCARGA EXCEL
-    # --------------------------------------------------------
+    # ========================================================
 
     try:
 
@@ -1094,7 +1433,7 @@ if st.session_state.get(
 
         with pd.ExcelWriter(
             salida_excel,
-            engine="openpyxl"
+            engine="openpyxl",
         ) as writer:
 
             pd.DataFrame(
@@ -1102,7 +1441,7 @@ if st.session_state.get(
             ).to_excel(
                 writer,
                 index=False,
-                sheet_name="Resultado"
+                sheet_name="Resultado",
             )
 
         salida_excel.seek(0)
@@ -1110,7 +1449,9 @@ if st.session_state.get(
         st.download_button(
             "📊 Descargar resultado Excel",
             data=salida_excel,
-            file_name="resultado_2ESO_NEE.xlsx",
+            file_name=(
+                "resultado_2ESO_NEE.xlsx"
+            ),
             mime=(
                 "application/vnd.openxmlformats-officedocument."
                 "spreadsheetml.sheet"
@@ -1129,15 +1470,18 @@ if st.session_state.get(
 # ============================================================
 
 st.markdown(
-    '<div class="titulo-principal">📚 Evaluación inicial de Lengua — 2.º ESO</div>',
-    unsafe_allow_html=True
+    '<div class="titulo-principal">'
+    '📚 Evaluación inicial de Lengua — 2.º ESO'
+    '</div>',
+    unsafe_allow_html=True,
 )
 
 st.markdown(
     '<div class="subtitulo-principal">'
-    'Lengua Castellana y Literatura · Prueba adaptada NEE'
+    'Lengua Castellana y Literatura · '
+    'Prueba adaptada NEE'
     '</div>',
-    unsafe_allow_html=True
+    unsafe_allow_html=True,
 )
 
 
@@ -1147,7 +1491,9 @@ st.markdown(
 
 nombre = st.text_input(
     "Nombre y apellidos",
-    help="Escribe tu nombre y apellidos."
+    help=(
+        "Escribe tu nombre y apellidos."
+    ),
 )
 
 grupo = st.selectbox(
@@ -1159,7 +1505,9 @@ grupo = st.selectbox(
         "2.º C",
         "2.º D",
     ],
-    help="Selecciona tu grupo."
+    help=(
+        "Selecciona tu grupo."
+    ),
 )
 
 
@@ -1179,32 +1527,40 @@ st.header(
 )
 
 st.markdown(
-    f'<div class="texto-examen">{EXAM["comprension"]["texto"].replace(chr(10), "<br>")}</div>',
-    unsafe_allow_html=True
+    '<div class="texto-examen">'
+    + EXAM["comprension"]["texto"]
+        .replace("\n", "<br>")
+    + "</div>",
+    unsafe_allow_html=True,
 )
 
 for p in EXAM["comprension"]["preguntas"]:
 
     st.markdown(
-        f'<div class="pregunta">{p["enunciado"]}</div>',
-        unsafe_allow_html=True
+        f'<div class="pregunta">'
+        f'{p["enunciado"]}'
+        f'</div>',
+        unsafe_allow_html=True,
     )
 
-    respuestas[p["id"]] = st.text_input(
-        "",
-        key=f"comp_{p['id']}",
-        label_visibility="collapsed",
-        help=(
-            "Escribe una respuesta breve."
-            if p["id"] != "c4"
-            else "Escribe tres acciones separadas por comas. "
-                 "Ejemplo: miraba, bajó, caminó."
+    respuestas[p["id"]] = (
+        st.text_input(
+            "",
+            key=f"comp_{p['id']}",
+            label_visibility="collapsed",
+            help=(
+                "Escribe una respuesta breve."
+                if p["id"] != "c4"
+                else
+                "Escribe tres acciones separadas "
+                "por comas. Ejemplo: miraba, bajó, caminó."
+            ),
         )
     )
 
     st.markdown(
         '<div class="separador-pregunta"></div>',
-        unsafe_allow_html=True
+        unsafe_allow_html=True,
     )
 
 
@@ -1219,11 +1575,16 @@ st.header(
     "2. Morfología"
 )
 
+respuestas["morfologia"] = {}
+
 for palabra in EXAM["morfologia"]:
 
     st.markdown(
-        f'<div class="elemento-pregunta">Palabra: <strong>{palabra["palabra"]}</strong></div>',
-        unsafe_allow_html=True
+        f'<div class="elemento-pregunta">'
+        f'Palabra: '
+        f'<strong>{palabra["palabra"]}</strong>'
+        f'</div>',
+        unsafe_allow_html=True,
     )
 
     datos_palabra = {}
@@ -1246,7 +1607,10 @@ for palabra in EXAM["morfologia"]:
                     "parasintética",
                 ],
                 key=clave,
-                help="Indica cómo está formada la palabra."
+                help=(
+                    "Indica cómo está formada "
+                    "la palabra."
+                ),
             )
 
         elif campo == "V/I":
@@ -1259,7 +1623,10 @@ for palabra in EXAM["morfologia"]:
                     "invariable",
                 ],
                 key=clave,
-                help="Indica si la palabra es variable o invariable."
+                help=(
+                    "Indica si la palabra es "
+                    "variable o invariable."
+                ),
             )
 
         else:
@@ -1270,19 +1637,23 @@ for palabra in EXAM["morfologia"]:
                 help=(
                     "Escribe la respuesta."
                     if campo != "Morfemas"
-                    else "Escribe los morfemas de la palabra."
-                )
+                    else
+                    "Escribe los morfemas de "
+                    "la palabra."
+                ),
             )
 
         datos_palabra[campo] = valor
 
     respuestas[
+        "morfologia"
+    ][
         palabra["id"]
     ] = datos_palabra
 
     st.markdown(
         '<div class="separador-pregunta"></div>',
-        unsafe_allow_html=True
+        unsafe_allow_html=True,
     )
 
 
@@ -1300,30 +1671,38 @@ st.header(
 for p in EXAM["determinantes_pronombres"]:
 
     st.markdown(
-        f'<div class="elemento-pregunta">{p["frase"]}</div>',
-        unsafe_allow_html=True
+        f'<div class="elemento-pregunta">'
+        f'{p["frase"]}'
+        f'</div>',
+        unsafe_allow_html=True,
     )
 
     st.markdown(
-        f'<div class="pregunta">{p["enunciado"]}</div>',
-        unsafe_allow_html=True
+        f'<div class="pregunta">'
+        f'{p["enunciado"]}'
+        f'</div>',
+        unsafe_allow_html=True,
     )
 
-    respuestas[p["id"]] = st.selectbox(
-        "",
-        [
+    respuestas[p["id"]] = (
+        st.selectbox(
             "",
-            "determinante",
-            "pronombre",
-        ],
-        key=f"dp_{p['id']}",
-        label_visibility="collapsed",
-        help="Selecciona una opción."
+            [
+                "",
+                "determinante",
+                "pronombre",
+            ],
+            key=f"dp_{p['id']}",
+            label_visibility="collapsed",
+            help=(
+                "Selecciona una opción."
+            ),
+        )
     )
 
     st.markdown(
         '<div class="separador-pregunta"></div>',
-        unsafe_allow_html=True
+        unsafe_allow_html=True,
     )
 
 
@@ -1350,30 +1729,38 @@ opciones_semantica = [
     "hiperónimo",
 ]
 
-
 for p in EXAM["semantica"]:
 
     st.markdown(
-        f'<div class="elemento-pregunta">{p["elemento"]}</div>',
-        unsafe_allow_html=True
+        f'<div class="elemento-pregunta">'
+        f'{p["elemento"]}'
+        f'</div>',
+        unsafe_allow_html=True,
     )
 
     st.markdown(
-        f'<div class="pregunta">{p["enunciado"]}</div>',
-        unsafe_allow_html=True
+        f'<div class="pregunta">'
+        f'{p["enunciado"]}'
+        f'</div>',
+        unsafe_allow_html=True,
     )
 
-    respuestas[p["id"]] = st.selectbox(
-        "",
-        opciones_semantica,
-        key=f"sem_{p['id']}",
-        label_visibility="collapsed",
-        help="Selecciona la relación semántica correcta."
+    respuestas[p["id"]] = (
+        st.selectbox(
+            "",
+            opciones_semantica,
+            key=f"sem_{p['id']}",
+            label_visibility="collapsed",
+            help=(
+                "Selecciona la relación "
+                "semántica correcta."
+            ),
+        )
     )
 
     st.markdown(
         '<div class="separador-pregunta"></div>',
-        unsafe_allow_html=True
+        unsafe_allow_html=True,
     )
 
 
@@ -1384,28 +1771,43 @@ st.divider()
 # 5. TIPOS DE TEXTO
 # ============================================================
 
-# ============================================================
-# 5. TIPOS DE TEXTO
-# ============================================================
-
-st.markdown('<div class="bloque-examen">', unsafe_allow_html=True)
-
 st.markdown(
-    '<div class="subtitulo">5. Tipos de texto</div>',
-    unsafe_allow_html=True
+    '<div class="bloque-examen">',
+    unsafe_allow_html=True,
 )
 
 st.markdown(
-    f'<div class="pregunta">{EXAM["textos"]["enunciado"]}</div>',
-    unsafe_allow_html=True
+    '<div class="subtitulo">'
+    '5. Tipos de texto'
+    '</div>',
+    unsafe_allow_html=True,
 )
 
-textos_definidos = EXAM["textos"]["textos"]
-preguntas_textos = EXAM["textos"]["preguntas"]
+st.markdown(
+    f'<div class="pregunta">'
+    f'{EXAM["textos"]["enunciado"]}'
+    f'</div>',
+    unsafe_allow_html=True,
+)
 
-for (letra, texto), pregunta in zip(
+textos_definidos = (
+    EXAM["textos"]["textos"]
+)
+
+preguntas_textos = (
+    EXAM["textos"]["preguntas"]
+)
+
+# A → t1
+# B → t2
+# Se relacionan por orden y no por tA/tB.
+
+for (
+    (letra, texto),
+    pregunta,
+) in zip(
     textos_definidos.items(),
-    preguntas_textos
+    preguntas_textos,
 ):
 
     st.markdown(
@@ -1415,21 +1817,33 @@ for (letra, texto), pregunta in zip(
             {texto}
         </div>
         """,
-        unsafe_allow_html=True
+        unsafe_allow_html=True,
     )
 
     st.markdown(
-        f'<div class="pregunta">{pregunta["enunciado"]}</div>',
-        unsafe_allow_html=True
+        f'<div class="pregunta">'
+        f'{pregunta["enunciado"]}'
+        f'</div>',
+        unsafe_allow_html=True,
     )
 
-    st.text_input(
-        "Respuesta",
-        key=f"respuesta_{pregunta['id']}",
-        help="Escribe qué tipo de texto es."
+    # IMPORTANTE:
+    # Guardamos la respuesta en respuestas[t1] / respuestas[t2]
+
+    respuestas[pregunta["id"]] = (
+        st.text_input(
+            "Respuesta",
+            key=f"texto_{pregunta['id']}",
+            help=(
+                "Escribe qué tipo de texto es."
+            ),
+        )
     )
 
-st.markdown('</div>', unsafe_allow_html=True)
+st.markdown(
+    '</div>',
+    unsafe_allow_html=True,
+)
 
 
 # ============================================================
@@ -1441,163 +1855,221 @@ st.header(
 )
 
 st.markdown(
-    f'<div class="texto-examen">'
-    f'{EXAM["literatura"]["poema"].replace(chr(10), "<br>")}'
-    f'</div>',
-    unsafe_allow_html=True
+    '<div class="texto-examen">'
+    + EXAM["literatura"]["poema"]
+        .replace("\n", "<br>")
+    + "</div>",
+    unsafe_allow_html=True,
 )
 
 
-literatura = {
-    p["id"]: p
-    for p in EXAM["literatura"]["preguntas"]
-}
-
-
-# Número de versos
+# ------------------------------------------------------------
+# l1
+# ------------------------------------------------------------
 
 st.markdown(
-    '<div class="pregunta">1. ¿Cuántos <strong>versos</strong> tiene el poema?</div>',
-    unsafe_allow_html=True
+    '<div class="pregunta">'
+    '1. ¿Cuántos <strong>versos</strong> '
+    'tiene el poema?'
+    '</div>',
+    unsafe_allow_html=True,
 )
 
-respuestas["l1"] = st.selectbox(
-    "",
-    [
+respuestas["l1"] = (
+    st.selectbox(
         "",
-        "1",
-        "2",
-        "3",
-        "4",
-        "5",
-        "6",
-    ],
-    key="literatura_l1",
-    label_visibility="collapsed",
-    help="Cuenta los versos del poema."
-)
-
-
-# Arte mayor / menor
-
-st.markdown(
-    '<div class="pregunta">2. ¿Es de <strong>arte mayor o menor</strong>?</div>',
-    unsafe_allow_html=True
-)
-
-respuestas["l2"] = st.selectbox(
-    "",
-    [
-        "",
-        "arte menor",
-        "arte mayor",
-    ],
-    key="literatura_l2",
-    label_visibility="collapsed",
-    help="Recuerda que el arte mayor tiene 9 sílabas métricas o más."
-)
-
-
-# Esquema métrico
-
-st.markdown(
-    '<div class="pregunta">3. Escribe el <strong>esquema métrico</strong>.</div>',
-    unsafe_allow_html=True
-)
-
-respuestas["l3"] = st.text_input(
-    "",
-    key="literatura_l3",
-    label_visibility="collapsed",
-    help=(
-        "Escribe, por ejemplo: 10A 10B 10A 10B. "
-        "También puedes separar los elementos con comas o punto y coma."
+        [
+            "",
+            "1",
+            "2",
+            "3",
+            "4",
+            "5",
+            "6",
+        ],
+        key="literatura_l1",
+        label_visibility="collapsed",
+        help=(
+            "Cuenta los versos del poema."
+        ),
     )
 )
 
 
-# Rima
+# ------------------------------------------------------------
+# l2
+# ------------------------------------------------------------
 
 st.markdown(
-    '<div class="pregunta">4. ¿Qué tipo de <strong>rima</strong> tiene?</div>',
-    unsafe_allow_html=True
+    '<div class="pregunta">'
+    '2. ¿Es de <strong>arte mayor o menor</strong>?'
+    '</div>',
+    unsafe_allow_html=True,
 )
 
-respuestas["l4"] = st.selectbox(
-    "",
-    [
+respuestas["l2"] = (
+    st.selectbox(
         "",
-        "asonante",
-        "consonante",
-    ],
-    key="literatura_l4",
-    label_visibility="collapsed",
-    help="Selecciona el tipo de rima."
-)
-
-
-# Sinalefa
-
-st.markdown(
-    '<div class="pregunta">5. Busca una <strong>sinalefa</strong> y escribe las palabras.</div>',
-    unsafe_allow_html=True
-)
-
-respuestas["l5"] = st.text_input(
-    "",
-    key="literatura_l5",
-    label_visibility="collapsed",
-    help=(
-        "Escribe las dos palabras que forman la sinalefa. "
-        "Ejemplo: sobre el."
+        [
+            "",
+            "arte menor",
+            "arte mayor",
+        ],
+        key="literatura_l2",
+        label_visibility="collapsed",
+        help=(
+            "Recuerda que el arte mayor "
+            "tiene 9 sílabas métricas o más."
+        ),
     )
 )
 
 
-# Personificación
+# ------------------------------------------------------------
+# l3
+# ------------------------------------------------------------
 
 st.markdown(
-    '<div class="pregunta">6. Busca una <strong>personificación</strong>.</div>',
-    unsafe_allow_html=True
+    '<div class="pregunta">'
+    '3. Escribe el <strong>esquema métrico</strong>.'
+    '</div>',
+    unsafe_allow_html=True,
 )
 
-respuestas["l6"] = st.text_input(
-    "",
-    key="literatura_l6",
-    label_visibility="collapsed",
-    help=(
-        "Escribe las palabras exactas que forman la personificación."
+respuestas["l3"] = (
+    st.text_input(
+        "",
+        key="literatura_l3",
+        label_visibility="collapsed",
+        help=(
+            "Escribe, por ejemplo: "
+            "10A 10B 10A 10B. "
+            "También puedes separar los elementos "
+            "con comas o punto y coma."
+        ),
+    )
+)
+
+
+# ------------------------------------------------------------
+# l4
+# ------------------------------------------------------------
+
+st.markdown(
+    '<div class="pregunta">'
+    '4. ¿Qué tipo de <strong>rima</strong> tiene?'
+    '</div>',
+    unsafe_allow_html=True,
+)
+
+respuestas["l4"] = (
+    st.selectbox(
+        "",
+        [
+            "",
+            "asonante",
+            "consonante",
+        ],
+        key="literatura_l4",
+        label_visibility="collapsed",
+        help=(
+            "Selecciona el tipo de rima."
+        ),
+    )
+)
+
+
+# ------------------------------------------------------------
+# l5
+# ------------------------------------------------------------
+
+st.markdown(
+    '<div class="pregunta">'
+    '5. Busca una <strong>sinalefa</strong> '
+    'y escribe las palabras.'
+    '</div>',
+    unsafe_allow_html=True,
+)
+
+respuestas["l5"] = (
+    st.text_input(
+        "",
+        key="literatura_l5",
+        label_visibility="collapsed",
+        help=(
+            "Escribe las dos palabras que forman "
+            "la sinalefa. Ejemplo: sobre el."
+        ),
+    )
+)
+
+
+# ------------------------------------------------------------
+# l6
+# ------------------------------------------------------------
+
+st.markdown(
+    '<div class="pregunta">'
+    '6. Busca una <strong>personificación</strong>.'
+    '</div>',
+    unsafe_allow_html=True,
+)
+
+respuestas["l6"] = (
+    st.text_input(
+        "",
+        key="literatura_l6",
+        label_visibility="collapsed",
+        help=(
+            "Escribe las palabras exactas que "
+            "forman la personificación."
+        ),
     )
 )
 
 
 st.divider()
 
+
 # ============================================================
 # 7. SINTAXIS
 # ============================================================
 
-st.markdown('<div class="bloque-examen">', unsafe_allow_html=True)
+st.markdown(
+    '<div class="bloque-examen">',
+    unsafe_allow_html=True,
+)
 
 st.markdown(
-    '<div class="subtitulo">7. Sintaxis</div>',
-    unsafe_allow_html=True
+    '<div class="subtitulo">'
+    '7. Sintaxis'
+    '</div>',
+    unsafe_allow_html=True,
 )
 
 sintaxis = EXAM["sintaxis"]
 
-# ------------------------------------------------------------
+
+# ============================================================
 # 7.1 FRASE U ORACIÓN
-# ------------------------------------------------------------
+# SOLO x1, x2, x3
+# ============================================================
 
 st.markdown(
-    '<div class="subtitulo">7.1. Frase u oración</div>',
-    unsafe_allow_html=True
+    '<div class="subtitulo">'
+    '7.1. Frase u oración'
+    '</div>',
+    unsafe_allow_html=True,
 )
 
-ids_frase = {"x1", "x2", "x3"}
+ids_frase = {
+    "x1",
+    "x2",
+    "x3",
+}
 
 for pregunta in sintaxis:
+
     if pregunta["id"] not in ids_frase:
         continue
 
@@ -1607,33 +2079,54 @@ for pregunta in sintaxis:
             {pregunta["frase"]}
         </div>
         """,
-        unsafe_allow_html=True
+        unsafe_allow_html=True,
     )
 
     st.markdown(
-        f'<div class="pregunta">{pregunta["enunciado"]}</div>',
-        unsafe_allow_html=True
+        f'<div class="pregunta">'
+        f'{pregunta["enunciado"]}'
+        f'</div>',
+        unsafe_allow_html=True,
     )
 
-    st.selectbox(
-        "Respuesta",
-        ["", "Frase", "Oración"],
-        key=f"respuesta_{pregunta['id']}",
-        help="Indica si tiene verbo y constituye una oración completa."
+    respuestas[pregunta["id"]] = (
+        st.selectbox(
+            "Respuesta",
+            [
+                "",
+                "Frase",
+                "Oración",
+            ],
+            key=f"sintaxis_{pregunta['id']}",
+            help=(
+                "Indica si es una frase "
+                "o una oración."
+            ),
+        )
     )
 
-# ------------------------------------------------------------
+
+# ============================================================
 # 7.2 MODALIDAD ORACIONAL
-# ------------------------------------------------------------
+# x4, x5, x6, x7
+# ============================================================
 
 st.markdown(
-    '<div class="subtitulo">7.2. Modalidad oracional</div>',
-    unsafe_allow_html=True
+    '<div class="subtitulo">'
+    '7.2. Modalidad oracional'
+    '</div>',
+    unsafe_allow_html=True,
 )
 
-ids_modalidad = {"x4", "x5", "x6", "x7"}
+ids_modalidad = {
+    "x4",
+    "x5",
+    "x6",
+    "x7",
+}
 
 for pregunta in sintaxis:
+
     if pregunta["id"] not in ids_modalidad:
         continue
 
@@ -1643,29 +2136,40 @@ for pregunta in sintaxis:
             {pregunta["frase"]}
         </div>
         """,
-        unsafe_allow_html=True
+        unsafe_allow_html=True,
     )
 
     st.markdown(
-        f'<div class="pregunta">{pregunta["enunciado"]}</div>',
-        unsafe_allow_html=True
+        f'<div class="pregunta">'
+        f'{pregunta["enunciado"]}'
+        f'</div>',
+        unsafe_allow_html=True,
     )
 
-    st.selectbox(
-        "Respuesta",
-        [
-            "",
-            "Enunciativa",
-            "Interrogativa",
-            "Exclamativa",
-            "Exhortativa",
-            "Desiderativa"
-        ],
-        key=f"respuesta_{pregunta['id']}",
-        help="Indica qué modalidad oracional presenta."
+    respuestas[pregunta["id"]] = (
+        st.selectbox(
+            "Respuesta",
+            [
+                "",
+                "Enunciativa",
+                "Interrogativa",
+                "Exclamativa",
+                "Exhortativa",
+                "Desiderativa",
+            ],
+            key=f"sintaxis_{pregunta['id']}",
+            help=(
+                "Indica qué modalidad "
+                "oracional presenta."
+            ),
+        )
     )
 
-st.markdown('</div>', unsafe_allow_html=True)
+
+st.markdown(
+    '</div>',
+    unsafe_allow_html=True,
+)
 
 
 # ============================================================
@@ -1677,43 +2181,52 @@ st.header(
 )
 
 st.markdown(
-    f'<div class="texto-examen">'
-    f'{EXAM["dialogo"]["texto"].replace(chr(10), "<br>")}'
-    f'</div>',
-    unsafe_allow_html=True
+    '<div class="texto-examen">'
+    + EXAM["dialogo"]["texto"]
+        .replace("\n", "<br>")
+    + "</div>",
+    unsafe_allow_html=True,
 )
-
 
 for p in EXAM["dialogo"]["preguntas"]:
 
     st.markdown(
-        f'<div class="pregunta">{p["enunciado"]}</div>',
-        unsafe_allow_html=True
+        f'<div class="pregunta">'
+        f'{p["enunciado"]}'
+        f'</div>',
+        unsafe_allow_html=True,
     )
 
     if p["id"] == "d3":
 
-        respuestas[p["id"]] = st.text_area(
-            "",
-            key="dialogo_d3",
-            label_visibility="collapsed",
-            height=100,
-            help=(
-                "Transforma la intervención a estilo indirecto."
+        respuestas[p["id"]] = (
+            st.text_area(
+                "",
+                key="dialogo_d3",
+                label_visibility="collapsed",
+                height=120,
+                help=(
+                    "Transforma la intervención "
+                    "a estilo indirecto."
+                ),
             )
         )
 
     else:
 
-        respuestas[p["id"]] = st.text_input(
-            "",
-            key=f"dialogo_{p['id']}",
-            label_visibility="collapsed",
-            help=(
-                "Para los interlocutores, escribe los nombres "
-                "separados por comas. Ejemplo: Lucía, Carlos."
-                if p["id"] == "d1"
-                else "Escribe la respuesta."
+        respuestas[p["id"]] = (
+            st.text_input(
+                "",
+                key=f"dialogo_{p['id']}",
+                label_visibility="collapsed",
+                help=(
+                    "Para los interlocutores, "
+                    "escribe los nombres separados "
+                    "por comas. Ejemplo: Lucía, Carlos."
+                    if p["id"] == "d1"
+                    else
+                    "Escribe la respuesta."
+                ),
             )
         )
 
@@ -1727,8 +2240,12 @@ st.divider()
 
 if st.button(
     "✅ ENTREGAR EXAMEN",
-    use_container_width=True
+    use_container_width=True,
 ):
+
+    # --------------------------------------------------------
+    # COMPROBACIONES
+    # --------------------------------------------------------
 
     if not nombre.strip():
 
@@ -1737,7 +2254,6 @@ if st.button(
         )
 
         st.stop()
-
 
     if not grupo:
 
@@ -1752,8 +2268,10 @@ if st.button(
     # CORRECCIÓN
     # --------------------------------------------------------
 
-    puntos, nota_final = corregir_examen(
-        respuestas
+    puntos, nota_final = (
+        corregir_examen(
+            respuestas
+        )
     )
 
 
@@ -1763,19 +2281,44 @@ if st.button(
 
     fila = {
         "name": nombre.strip(),
+
         "group": grupo,
+
         "date": datetime.now().strftime(
             "%Y-%m-%d %H:%M:%S"
         ),
 
-        "comprension": puntos["comprension"],
-        "morfologia": puntos["morfologia"],
-        "determinantes": puntos["determinantes"],
-        "semantica": puntos["semantica"],
-        "textos": puntos["textos"],
-        "literatura": puntos["literatura"],
-        "sintaxis": puntos["sintaxis"],
-        "dialogo": puntos["dialogo"],
+        "comprension": (
+            puntos["comprension"]
+        ),
+
+        "morfologia": (
+            puntos["morfologia"]
+        ),
+
+        "determinantes": (
+            puntos["determinantes"]
+        ),
+
+        "semantica": (
+            puntos["semantica"]
+        ),
+
+        "textos": (
+            puntos["textos"]
+        ),
+
+        "literatura": (
+            puntos["literatura"]
+        ),
+
+        "sintaxis": (
+            puntos["sintaxis"]
+        ),
+
+        "dialogo": (
+            puntos["dialogo"]
+        ),
 
         "total": nota_final,
     }
@@ -1788,7 +2331,6 @@ if st.button(
 
     # --------------------------------------------------------
     # ESTADO DE SESIÓN
-    # Esto hace que el formulario desaparezca después de enviar.
     # --------------------------------------------------------
 
     st.session_state[
