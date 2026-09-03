@@ -129,7 +129,6 @@ Era el comienzo de una nueva vida para él.""",
 
             "textos": {
                 "A": "Apaga el horno y deja reposar la masa.",
-
                 "B": "Los mamíferos son animales vertebrados que alimentan a sus crías con leche."
             },
 
@@ -152,13 +151,20 @@ Era el comienzo de una nueva vida para él.""",
 
         "literatura": {
 
-            "poema": """La luna brilla sobre el gran mar,
+            # 10A 10B 10A 10B
+            # Se mantienen sinalefas reales:
+            # sobre_el / sobre_el / mira_el
+            # y rima consonante:
+            # mar / mar
+            # cielo / cielo
+
+            "poema": """La luna resplandece sobre el mar,
 
 Las estrellas brillan sobre el cielo,
 
 El viento susurra cerca del mar,
 
-Y la noche se cubre de hielo.""",
+La noche oscura mira el cielo.""",
 
             "preguntas": [
                 {
@@ -195,10 +201,6 @@ Y la noche se cubre de hielo.""",
 
         "sintaxis": [
 
-            # --------------------------------------------------------
-            # FRASE U ORACIÓN: 3 preguntas
-            # --------------------------------------------------------
-
             {
                 "id": "x1",
                 "frase": "Buenas tardes",
@@ -216,10 +218,6 @@ Y la noche se cubre de hielo.""",
                 "frase": "Mi hermano estudia",
                 "enunciado": "¿Es **frase u oración**?"
             },
-
-            # --------------------------------------------------------
-            # MODALIDAD ORACIONAL: 4 preguntas
-            # --------------------------------------------------------
 
             {
                 "id": "x4",
@@ -265,12 +263,10 @@ Carlos: Perfecto, allí estaremos más tranquilos.""",
                     "id": "d1",
                     "enunciado": "1. Escribe los **personajes** que hablan."
                 },
-
                 {
                     "id": "d2",
                     "enunciado": "2. ¿Cuántas **intervenciones** hay?"
                 },
-
                 {
                     "id": "d3",
                     "enunciado": """3. Pasa esta frase a **estilo indirecto**:
