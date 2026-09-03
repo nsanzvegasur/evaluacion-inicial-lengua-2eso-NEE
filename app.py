@@ -9,7 +9,113 @@ import pandas as pd
 import streamlit as st
 
 from examen2ESO_NEE import EXAMEN
-from analytics import radar_chart, generar_perfil
+import plotly.graph_objects as go
+
+
+def radar_chart(datos, titulo="Perfil competencial"):
+    competencias = [
+        "comprension",
+        "morfologia",
+        "semantica",
+        "textos",
+        "literatura",
+        "sintaxis",
+    ]
+
+    nombres = {
+        "comprension": "Comprensión",
+        "morfologia": "Morfología",
+        "semantica": "Semántica",
+        "textos": "Textos",
+        "literatura": "Literatura",
+        "sintaxis": "Sintaxis",
+    }
+
+    valores = [
+        float(datos.get(c, 0) or 0)
+        for c in competencias
+    ]
+
+    etiquetas = [
+        nombres[c]
+        for c in competencias
+    ]
+
+    valores.append(valores[0])
+    etiquetas.append(etiquetas[0])
+
+    fig = go.Figure()
+
+    fig.add_trace(
+        go.Scatterpolar(
+            r=valores,
+            theta=etiquetas,
+            fill="toself",
+            name="Resultado",
+        )
+    )
+
+    fig.update_layout(
+        title=titulo,
+        polar=dict(
+            radialaxis=dict(
+                visible=True,
+                range=[0, 10],
+            )
+        ),
+        showlegend=False,
+        margin=dict(
+            l=40,
+            r=40,
+            t=60,
+            b=40,
+        ),
+    )
+
+    return fig
+
+
+def generar_perfil(datos):
+
+    competencias = {
+        "comprension": "Comprensión",
+        "morfologia": "Morfología",
+        "semantica": "Semántica",
+        "textos": "Textos",
+        "literatura": "Literatura",
+        "sintaxis": "Sintaxis",
+    }
+
+    resultado = []
+
+    for clave, nombre in competencias.items():
+
+        nota = round(
+            float(
+                datos.get(clave, 0) or 0
+            ),
+            2,
+        )
+
+        if nota < 5:
+            nivel = "Necesita refuerzo"
+
+        elif nota < 8:
+            nivel = "Nivel adecuado"
+
+        else:
+            nivel = "Fortaleza"
+
+        resultado.append(
+            {
+                "competencia": clave,
+                "nombre": nombre,
+                "nota": nota,
+                "nivel": nivel,
+            }
+        )
+
+    return resultado
 
 
 # ==============================================================
