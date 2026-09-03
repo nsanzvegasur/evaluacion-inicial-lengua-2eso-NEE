@@ -1384,78 +1384,52 @@ st.divider()
 # 5. TIPOS DE TEXTO
 # ============================================================
 
-st.header(
-    "5. Tipos de texto"
-)
+# ============================================================
+# 5. TIPOS DE TEXTO
+# ============================================================
+
+st.markdown('<div class="bloque-examen">', unsafe_allow_html=True)
 
 st.markdown(
-    f'<div class="enunciado-grande">{EXAM["textos"]["enunciado"]}</div>',
+    '<div class="subtitulo">5. Tipos de texto</div>',
     unsafe_allow_html=True
 )
 
-
-opciones_texto = [
-    "",
-    "narrativo",
-    "descriptivo",
-    "expositivo",
-    "argumentativo",
-    "instructivo",
-    "dialogado",
-]
-
-
-# IMPORTANTE:
-# No usamos next().
-# Se utilizan directamente los textos A y B del examen.
+st.markdown(
+    f'<div class="pregunta">{EXAM["textos"]["enunciado"]}</div>',
+    unsafe_allow_html=True
+)
 
 textos_definidos = EXAM["textos"]["textos"]
-preguntas_textos = {
-    p["id"]: p
-    for p in EXAM["textos"]["preguntas"]
-}
+preguntas_textos = EXAM["textos"]["preguntas"]
 
-
-for letra, texto in textos_definidos.items():
+for (letra, texto), pregunta in zip(
+    textos_definidos.items(),
+    preguntas_textos
+):
 
     st.markdown(
-        f'<div class="elemento-pregunta"><strong>Texto {letra}:</strong></div>',
+        f"""
+        <div class="ejercicio">
+            <strong>Texto {letra}</strong><br><br>
+            {texto}
+        </div>
+        """,
         unsafe_allow_html=True
     )
 
     st.markdown(
-        f'<div class="texto-examen">{texto}</div>',
+        f'<div class="pregunta">{pregunta["enunciado"]}</div>',
         unsafe_allow_html=True
     )
 
-    pregunta = preguntas_textos.get(
-        f"t{letra}"
+    st.text_input(
+        "Respuesta",
+        key=f"respuesta_{pregunta['id']}",
+        help="Escribe qué tipo de texto es."
     )
 
-    if pregunta:
-
-        st.markdown(
-            f'<div class="pregunta">{pregunta["enunciado"]}</div>',
-            unsafe_allow_html=True
-        )
-
-        respuestas[
-            pregunta["id"]
-        ] = st.selectbox(
-            "",
-            opciones_texto,
-            key=f"texto_{pregunta['id']}",
-            label_visibility="collapsed",
-            help="Selecciona el tipo de texto."
-        )
-
-    st.markdown(
-        '<div class="separador-pregunta"></div>',
-        unsafe_allow_html=True
-    )
-
-
-st.divider()
+st.markdown('</div>', unsafe_allow_html=True)
 
 
 # ============================================================
@@ -1599,119 +1573,99 @@ respuestas["l6"] = st.text_input(
 
 st.divider()
 
-
 # ============================================================
 # 7. SINTAXIS
 # ============================================================
 
-st.header(
-    "7. Sintaxis"
+st.markdown('<div class="bloque-examen">', unsafe_allow_html=True)
+
+st.markdown(
+    '<div class="subtitulo">7. Sintaxis</div>',
+    unsafe_allow_html=True
 )
 
+sintaxis = EXAM["sintaxis"]
 
 # ------------------------------------------------------------
 # 7.1 FRASE U ORACIÓN
 # ------------------------------------------------------------
 
-st.subheader(
-    "7.1. Frase u oración"
+st.markdown(
+    '<div class="subtitulo">7.1. Frase u oración</div>',
+    unsafe_allow_html=True
 )
 
-ids_frase = {
-    "x1",
-    "x2",
-    "x3",
-    "x5",
-}
+ids_frase = {"x1", "x2", "x3"}
 
-
-for p in EXAM["sintaxis"]:
-
-    if p["id"] not in ids_frase:
+for pregunta in sintaxis:
+    if pregunta["id"] not in ids_frase:
         continue
 
     st.markdown(
-        f'<div class="elemento-pregunta">{p["frase"]}</div>',
+        f"""
+        <div class="ejercicio">
+            {pregunta["frase"]}
+        </div>
+        """,
         unsafe_allow_html=True
     )
 
     st.markdown(
-        f'<div class="pregunta">{p["enunciado"]}</div>',
+        f'<div class="pregunta">{pregunta["enunciado"]}</div>',
         unsafe_allow_html=True
     )
 
-    respuestas[p["id"]] = st.selectbox(
-        "",
-        [
-            "",
-            "frase",
-            "oración",
-        ],
-        key=f"sintaxis_{p['id']}",
-        label_visibility="collapsed",
-        help="Selecciona si es una frase o una oración."
+    st.selectbox(
+        "Respuesta",
+        ["", "Frase", "Oración"],
+        key=f"respuesta_{pregunta['id']}",
+        help="Indica si tiene verbo y constituye una oración completa."
     )
-
 
 # ------------------------------------------------------------
 # 7.2 MODALIDAD ORACIONAL
 # ------------------------------------------------------------
 
-st.subheader(
-    "7.2. Modalidad oracional"
+st.markdown(
+    '<div class="subtitulo">7.2. Modalidad oracional</div>',
+    unsafe_allow_html=True
 )
 
-ids_modalidad = {
-    "x4",
-    "x5",
-    "x6",
-    "x7",
-    "x8",
-    "x9",
-}
+ids_modalidad = {"x4", "x5", "x6", "x7"}
 
-
-opciones_modalidad = [
-    "",
-    "enunciativa",
-    "interrogativa",
-    "exclamativa",
-    "desiderativa",
-    "exhortativa",
-]
-
-
-for p in EXAM["sintaxis"]:
-
-    if p["id"] not in ids_modalidad:
-        continue
-
-    # Si el elemento ya se ha mostrado arriba como frase/oración,
-    # no volver a mostrarlo allí.
-
-    if p["id"] in ids_frase:
+for pregunta in sintaxis:
+    if pregunta["id"] not in ids_modalidad:
         continue
 
     st.markdown(
-        f'<div class="elemento-pregunta">{p["frase"]}</div>',
+        f"""
+        <div class="ejercicio">
+            {pregunta["frase"]}
+        </div>
+        """,
         unsafe_allow_html=True
     )
 
     st.markdown(
-        f'<div class="pregunta">{p["enunciado"]}</div>',
+        f'<div class="pregunta">{pregunta["enunciado"]}</div>',
         unsafe_allow_html=True
     )
 
-    respuestas[p["id"]] = st.selectbox(
-        "",
-        opciones_modalidad,
-        key=f"sintaxis_{p['id']}",
-        label_visibility="collapsed",
-        help="Selecciona la modalidad oracional."
+    st.selectbox(
+        "Respuesta",
+        [
+            "",
+            "Enunciativa",
+            "Interrogativa",
+            "Exclamativa",
+            "Exhortativa",
+            "Desiderativa"
+        ],
+        key=f"respuesta_{pregunta['id']}",
+        help="Indica qué modalidad oracional presenta."
     )
 
-
-st.divider()
+st.markdown('</div>', unsafe_allow_html=True)
 
 
 # ============================================================
