@@ -1,161 +1,104 @@
 import pandas as pd
+import plotly.graph_objects as go
 
 
-def cargar_datos(ruta="results.csv"):
-    """
-    Carga los resultados guardados.
-    Si no existe el archivo, devuelve un DataFrame vacío.
-    """
-    try:
-        return pd.read_csv(ruta)
-    except (FileNotFoundError, pd.errors.EmptyDataError):
-        return pd.DataFrame()
+COMPETENCIAS = [
+    "comprension",
+    "morfologia",
+    "semantica",
+    "textos",
+    "literatura",
+    "sintaxis",
+]
 
 
-def resultados_grupo(ruta="results.csv", grupo=None):
-    """
-    Devuelve únicamente los resultados del grupo indicado.
-    """
-    df = cargar_datos(ruta)
-
-    if df.empty or grupo is None:
-        return df
-
-    if "Grupo" not in df.columns:
-        return pd.DataFrame()
-
-    return df[df["Grupo"].astype(str).str.upper() == str(grupo).upper()]
+NOMBRES = {
+    "comprension": "Comprensión",
+    "morfologia": "Morfología",
+    "semantica": "Semántica",
+    "textos": "Textos",
+    "literatura": "Literatura",
+    "sintaxis": "Sintaxis",
+}
 
 
-def media_grupo(ruta="results.csv", grupo=None):
-    """
-    Calcula la media de la nota automática del grupo.
-    """
-    df = resultados_grupo(ruta, grupo)
+def radar_chart(datos, titulo="Perfil competencial"):
 
-    if df.empty or "Nota automática" not in df.columns:
-        return 0.0
-
-    return round(pd.to_numeric(df["Nota automática"], errors="coerce").mean(), 2)
-
-
-def mejor_nota_grupo(ruta="results.csv", grupo=None):
-    """
-    Devuelve la mejor nota del grupo.
-    """
-    df = resultados_grupo(ruta, grupo)
-
-    if df.empty or "Nota automática" not in df.columns:
-        return 0.0
-
-    return round(
-        pd.to_numeric(df["Nota automática"], errors="coerce").max(),
-        2
-    )
-
-
-def peor_nota_grupo(ruta="results.csv", grupo=None):
-    """
-    Devuelve la nota más baja del grupo.
-    """
-    df = resultados_grupo(ruta, grupo)
-
-    if df.empty or "Nota automática" not in df.columns:
-        return 0.0
-
-    return round(
-        pd.to_numeric(df["Nota automática"], errors="coerce").min(),
-        2
-    )
-
-
-def numero_alumnos(ruta="results.csv", grupo=None):
-    """
-    Cuenta los alumnos que tienen resultados guardados.
-    """
-    df = resultados_grupo(ruta, grupo)
-
-    if df.empty:
-        return 0
-
-    return len(df)
-
-
-def estadisticas_grupo(ruta="results.csv", grupo=None):
-    """
-    Devuelve un resumen general del grupo.
-    """
-    df = resultados_grupo(ruta, grupo)
-
-    if df.empty:
-        return {
-            "alumnos": 0,
-            "media": 0.0,
-            "mejor_nota": 0.0,
-            "peor_nota": 0.0
-        }
-
-    return {
-        "alumnos": numero_alumnos(ruta, grupo),
-        "media": media_grupo(ruta, grupo),
-        "mejor_nota": mejor_nota_grupo(ruta, grupo),
-        "peor_nota": peor_nota_grupo(ruta, grupo)
-    }
-
-
-def comparativa_grupo(ruta="results.csv", grupo=None):
-    """
-    Prepara los datos para mostrar una comparativa anónima.
-
-    Nunca devuelve los nombres reales de los alumnos.
-    """
-    df = resultados_grupo(ruta, grupo).copy()
-
-    if df.empty:
-        return pd.DataFrame()
-
-    if "Nota automática" not in df.columns:
-        return pd.DataFrame()
-
-    df["Nota automática"] = pd.to_numeric(
-        df["Nota automática"],
-        errors="coerce"
-    )
-
-    df = df.sort_values(
-        "Nota automática",
-        ascending=False
-    ).reset_index(drop=True)
-
-    df["Alumno"] = [
-        f"Alumno {i + 1}"
-        for i in range(len(df))
+    valores = [
+        float(datos.get(c, 0) or 0)
+        for c in COMPETENCIAS
     ]
 
-    return df[["Alumno", "Nota automática"]]
-
-
-def areas_disponibles(ruta="results.csv"):
-    """
-    Detecta las columnas de resultados por áreas.
-    """
-    df = cargar_datos(ruta)
-
-    if df.empty:
-        return []
-
-    areas = [
-        "Comprensión",
-        "Morfología",
-        "Semántica",
-        "Textos",
-        "Literatura",
-        "Sintaxis",
-        "Diálogo"
+    etiquetas = [
+        NOMBRES[c]
+        for c in COMPETENCIAS
     ]
 
-    return [
-        area
-        for area in areas
-        if area in df.columns
-    ]
+    valores.append(valores[0])
+    etiquetas.append(etiquetas[0])
+
+    fig = go.Figure()
+
+    fig.add_trace(
+        go.Scatterpolar(
+            r=valores,
+            theta=etiquetas,
+            fill="toself",
+            name="Resultado"
+        )
+    )
+
+    fig.update_layout(
+        title=titulo,
+        polar=dict(
+            radialaxis=dict(
+                visible=True,
+                range=[0, 10]
+            )
+        ),
+        showlegend=False,
+        margin=dict(
+            l=40,
+            r=40,
+            t=60,
+            b=40
+        )
+    )
+
+    return fig
+
+
+def generar_perfil(datos):
+
+    resultado = []
+
+    for c in COMPETENCIAS:
+
+        nota = round(
+            float(datos.get(c, 0) or 0),
+            2
+        )
+
+        if nota < 5:
+            nivel = "Necesita refuerzo"
+            texto = f"{NOMBRES[c]}: necesita refuerzo."
+
+        elif nota < 8:
+            nivel = "Nivel adecuado"
+            texto = f"{NOMBRES[c]}: nivel adecuado."
+
+        else:
+            nivel = "Fortaleza"
+            texto = f"{NOMBRES[c]}: fortaleza."
+
+        resultado.append(
+            {
+                "competencia": c,
+                "nombre": NOMBRES[c],
+                "nota": nota,
+                "nivel": nivel,
+                "texto": texto,
+            }
+        )
+
+    return resultado
