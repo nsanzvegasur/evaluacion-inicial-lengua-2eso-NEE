@@ -20,15 +20,15 @@ Era el comienzo de una nueva vida para él.""",
             "preguntas": [
                 {
                     "id": "c1",
-                    "enunciado": "1. ¿Dónde ocurre la historia?"
+                    "enunciado": "1. ¿**Dónde** ocurre la historia?"
                 },
                 {
                     "id": "c2",
-                    "enunciado": "2. ¿Quiénes aparecen en la historia?"
+                    "enunciado": "2. ¿**Quiénes** aparecen en la historia?"
                 },
                 {
                     "id": "c3",
-                    "enunciado": "3. ¿Cuándo ocurre la historia?"
+                    "enunciado": "3. ¿**Cuándo** ocurre la historia?"
                 },
                 {
                     "id": "c4",
