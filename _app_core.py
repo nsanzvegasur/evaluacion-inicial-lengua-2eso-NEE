@@ -178,11 +178,9 @@ with st.form("examen_2eso_nee"):
     for palabra in EXAM["morfologia"]:
         st.markdown(f"<h3>{palabra['palabra']}</h3>",unsafe_allow_html=True)
         for campo in palabra["campos"]:
-            if campo == "V/I":
-                continue
+            if campo == "V/I": continue
             visible=etiquetas.get(campo,campo)
-            label=f'<span class="rojo">{visible}</span>'
-            st.markdown(label,unsafe_allow_html=True)
+            st.markdown(f'<span class="rojo">{visible}</span>',unsafe_allow_html=True)
             key=f"{palabra['id']}_{normalizar(campo).replace(' ','_').replace('/','_')}"
             if campo=="Estructura": val=st.selectbox("",["","simple","derivada","compuesta","parasintética"],key=key,label_visibility="collapsed")
             else: val=st.text_input("",key=key,label_visibility="collapsed")
@@ -201,7 +199,7 @@ with st.form("examen_2eso_nee"):
     bloque_html("<h2>3. Semántica — 1 punto</h2>")
     opciones=["","antonimia","sinonimia","campo semántico","polisemia","homonimia","meronimia","hipónimos","hiperónimo"]
     for q in EXAM["semantica"]:
-        st.markdown(f"<span>{q['elemento']}</span> — <span class='rojo'>relación semántica</span>",unsafe_allow_html=True)
+        st.markdown(f"<span class='rojo'>{q['elemento']}</span>",unsafe_allow_html=True)
         respuestas[q["id"]]=st.selectbox("",opciones,key=q["id"],label_visibility="collapsed")
     st.markdown('<div class="separador"></div>',unsafe_allow_html=True)
 
@@ -210,7 +208,7 @@ with st.form("examen_2eso_nee"):
     for letra in ["A","B"]:
         texto=EXAM["textos"]["textos"][letra]
         q=next(x for x in EXAM["textos"]["preguntas"] if x["id"]==f"t{1 if letra=='A' else 2}")
-        st.markdown(f"<p><b>Texto {letra}:</b> {texto}</p><span class='rojo'>tipo de texto</span>",unsafe_allow_html=True)
+        st.markdown(f"<p><span class='rojo'><b>Texto {letra}:</b></span> {texto}</p>",unsafe_allow_html=True)
         respuestas[q["id"]]=st.selectbox("",opciones_t,key=q["id"],label_visibility="collapsed")
     st.markdown('<div class="separador"></div>',unsafe_allow_html=True)
 
