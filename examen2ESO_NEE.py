@@ -228,12 +228,6 @@ La noche oscura mira el cielo.""",
                 "id": "x6",
                 "frase": "Mañana iremos al cine.",
                 "enunciado": "Indica la **modalidad oracional**."
-            },
-
-            {
-                "id": "x7",
-                "frase": "Cierra la puerta.",
-                "enunciado": "Indica la **modalidad oracional**."
             }
         ],
 
