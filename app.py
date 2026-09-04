@@ -26,4 +26,16 @@ source = source.replace(
     "st.markdown(f\"<span class='rojo'>{q['elemento']}</span>\",unsafe_allow_html=True)"
 )
 
+# El poema queda centrado y con una separación visual clara antes de la primera pregunta.
+source = source.replace(
+    "st.markdown(EXAM[\"literatura\"][\"poema\"].replace(\"\\n\",\"<br>\"), unsafe_allow_html=True)",
+    "st.markdown('<div style=\"text-align:center; line-height:1.9; margin-bottom:2.5rem;\">' + EXAM[\"literatura\"][\"poema\"].replace(\"\\n\",\"<br>\") + '</div>', unsafe_allow_html=True)"
+)
+
+# En diálogo, el primer ejercicio incluye el aviso para separar los interlocutores por comas.
+source = source.replace(
+    "for q in EXAM[\"dialogo\"][\"preguntas\"]:\n        st.markdown(rojo_marcadores(q[\"enunciado\"]),unsafe_allow_html=True)",
+    "for q in EXAM[\"dialogo\"][\"preguntas\"]:\n        st.markdown(rojo_marcadores(q[\"enunciado\"]),unsafe_allow_html=True)\n        if q[\"id\"] == \"d1\":\n            st.markdown('<div class=\"ayuda\"><b>Aviso:</b> separa las respuestas por comas.</div>', unsafe_allow_html=True)"
+)
+
 exec(compile(source, str(core), "exec"), {"__name__": "__main__", "__file__": str(core)})
