@@ -148,16 +148,28 @@ st.markdown('<div class="subtitulo">Lengua Castellana y Literatura · Curso 2026
 if st.session_state.get("enviado"):
     fila=st.session_state["fila"]; puntos=st.session_state["puntos"]; nota9=st.session_state["nota9"]
     faltas=st.session_state["faltas"]; tildes=st.session_state["tildes"]
-    st.success("Examen corregido y guardado correctamente.")
+    st.success("Esta parte de la evaluación se ha enviado correctamente.")
     st.markdown(f'<div class="nota9">NOTA DE ESTA PARTE · SOBRE 9<br>{nota9:.2f} / 9</div>',unsafe_allow_html=True)
-    st.markdown('<div class="aviso"><b>IMPORTANTE:</b> esta nota automática es sobre 9. Queda por realizar la producción escrita a mano, que puede aportar hasta 1 punto adicional.</div>',unsafe_allow_html=True)
+    st.markdown('<div class="aviso"><b>IMPORTANTE:</b> has terminado esta parte de la evaluación. Esta prueba automática vale <b>9 puntos</b>. Ahora debes continuar con la <b>producción escrita</b>, que se corregirá aparte y supondrá hasta <b>1 punto adicional</b>.</div>',unsafe_allow_html=True)
+    st.write(f"Fecha y hora: {fila['date']}")
+    st.markdown("### Resultados por áreas")
+    maximos={"comprension":2,"morfologia":2.5,"semantica":1,"textos":1.5,"literatura":2,"sintaxis":1}
+    nombres={"comprension":"Comprensión","morfologia":"Morfología","semantica":"Semántica","textos":"Textos","literatura":"Literatura","sintaxis":"Sintaxis"}
+    for c,mx in maximos.items():
+        st.write(f"{nombres[c]}: {puntos[c]/mx*10:.2f} / 10")
+    st.markdown("### Seguimiento de ortografía")
     st.write(f"Faltas de ortografía detectadas: {faltas}")
     st.write(f"Faltas de tilde detectadas: {tildes}")
-    st.caption("Los errores ortográficos y de tilde se cuentan como información de seguimiento, pero no restan puntos de la nota.")
-    st.subheader("Resultado por áreas")
-    for c,mx in [("comprension",2),("morfologia",2.5),("semantica",1),("textos",1.5),("literatura",2),("sintaxis",1)]: st.write(f"{c.capitalize()}: {puntos[c]/mx*10:.2f}/10")
+    st.caption("Las faltas se cuentan para el seguimiento del alumno, pero en esta adaptación NNEE no restan puntos de la nota.")
+    st.markdown("### Perfil de aprendizaje")
+    for c,mx in maximos.items():
+        porcentaje=(puntos[c]/mx) if mx else 0
+        estado="consolidado" if porcentaje>=0.7 else "en proceso" if porcentaje>=0.5 else "necesita refuerzo"
+        st.write(f"• {nombres[c]}: {estado}.")
+    st.markdown("### Descargar resultados")
     st.download_button("Descargar resultado CSV",csv_bytes(fila),file_name="Resultado_2ESO_NEE.csv",mime="text/csv",use_container_width=True)
     st.download_button("Descargar resultado Excel",excel_bytes(fila),file_name="Resultado_2ESO_NEE.xlsx",mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",use_container_width=True)
+    st.markdown("Esta evaluación está lista para descargar y entregar en Classroom.")
     if st.button("Volver al inicio",use_container_width=True): st.session_state.clear(); st.rerun()
     st.stop()
 
@@ -254,7 +266,7 @@ if enviar:
     puntos,total10=corregir(respuestas)
     faltas,tildes=detectar_ortografia([v for v in respuestas.values() if isinstance(v,str)])
     nota9=round(total10*0.9,2)
-    fila={"name":nombre.strip(),"group":grupo,"date":datetime.now().strftime("%Y-%m-%d %H:%M:%S"),**{k:round(v,2) for k,v in puntos.items()},"nota_sobre_9":nota9,"faltas_ortografia":faltas,"faltas_tildes":tildes,"produccion_escrita_pendiente":"Sí · hasta +1 punto"}
+    fila={"name":nombre.strip(),"group":grupo,"date":datetime.now().strftime("%Y-%m-%d %H:%M:%S"),**{k:round(v,2) for k,v in puntos.items()},"nota_final_sobre_9":nota9,"faltas_ortografia":faltas,"faltas_tildes":tildes,"produccion_escrita_pendiente":"Sí · hasta +1 punto"}
     try: guardar_csv(fila)
     except Exception as e: st.error("No se pudo guardar el resultado."); st.exception(e); st.stop()
     st.session_state.update(enviado=True,fila=fila,puntos=puntos,nota9=nota9,faltas=faltas,tildes=tildes)
