@@ -7,7 +7,7 @@ import streamlit as st
 # Este archivo añade únicamente la capa visual accesible.
 
 st.set_page_config(
-    page_title="Evaluación Inicial Lengua 2.º ESO*",
+    page_title="Evaluación Inicial Lengua 2.º ESO * ",
     page_icon="📚",
     layout="centered",
 )
