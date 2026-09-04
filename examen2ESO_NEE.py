@@ -37,7 +37,6 @@ Era el comienzo de una nueva vida para él.""",
             ]
         },
 
-
         # ============================================================
         # 2. MORFOLOGÍA
         # ============================================================
@@ -78,7 +77,6 @@ Era el comienzo de una nueva vida para él.""",
             }
         ],
 
-
         # ============================================================
         # 3. DETERMINANTES Y PRONOMBRES
         # ============================================================
@@ -95,7 +93,6 @@ Era el comienzo de una nueva vida para él.""",
                 "enunciado": "La palabra **Nadie** es..."
             }
         ],
-
 
         # ============================================================
         # 4. SEMÁNTICA
@@ -119,19 +116,16 @@ Era el comienzo de una nueva vida para él.""",
             }
         ],
 
-
         # ============================================================
         # 5. TIPOS DE TEXTO
         # ============================================================
 
         "textos": {
             "enunciado": "Lee los textos y escribe qué **tipo de texto** es cada uno.",
-
             "textos": {
                 "A": "Apaga el horno y deja reposar la masa.",
                 "B": "Los mamíferos son animales vertebrados que alimentan a sus crías con leche."
             },
-
             "preguntas": [
                 {
                     "id": "t1",
@@ -144,13 +138,11 @@ Era el comienzo de una nueva vida para él.""",
             ]
         },
 
-
         # ============================================================
         # 6. LITERATURA
         # ============================================================
 
         "literatura": {
-
             "poema": """La luna resplandece sobre el mar,
 
 Las estrellas brillan sobre el cielo,
@@ -178,52 +170,45 @@ La noche oscura mira el cielo.""",
                 },
                 {
                     "id": "l5",
-                    "enunciado": "5. Busca una **sinalefa** y escribe las palabras."
+                    "enunciado": "5. Escribe las **palabras exactas en las que sucede** la sinalefa."
                 },
                 {
                     "id": "l6",
-                    "enunciado": "6. Busca una **personificación**."
+                    "enunciado": "6. Escribe las **palabras exactas en las que sucede** la personificación."
                 }
             ]
         },
-
 
         # ============================================================
         # 7. SINTAXIS
         # ============================================================
 
         "sintaxis": [
-
             {
                 "id": "x1",
                 "frase": "Buenas tardes",
                 "enunciado": "¿Es **frase u oración**?"
             },
-
             {
                 "id": "x2",
                 "frase": "El perro ladra",
                 "enunciado": "¿Es **frase u oración**?"
             },
-
             {
                 "id": "x3",
                 "frase": "Mi hermano estudia",
                 "enunciado": "¿Es **frase u oración**?"
             },
-
             {
                 "id": "x4",
                 "frase": "¿Vienes conmigo?",
                 "enunciado": "Indica la **modalidad oracional**."
             },
-
             {
                 "id": "x5",
                 "frase": "¡Qué frío hace!",
                 "enunciado": "Indica la **modalidad oracional**."
             },
-
             {
                 "id": "x6",
                 "frase": "Mañana iremos al cine.",
@@ -231,20 +216,17 @@ La noche oscura mira el cielo.""",
             }
         ],
 
-
         # ============================================================
         # 8. DIÁLOGO
         # ============================================================
 
         "dialogo": {
-
             "texto": """Lucía: ¿Has terminado el resumen de Lengua?
 Carlos: Sí, lo hice ayer por la tarde.
 Lucía: Yo todavía estoy con la conclusión.
 Carlos: Si quieres, lo revisamos juntos después de clase.
 Lucía: Vale, quedamos en la biblioteca.
 Carlos: Perfecto, allí estaremos más tranquilos.""",
-
             "preguntas": [
                 {
                     "id": "d1",
