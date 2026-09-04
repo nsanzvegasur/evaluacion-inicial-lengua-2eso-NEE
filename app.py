@@ -1,16 +1,19 @@
+from pathlib import Path
+
 import streamlit as st
 
-# La configuración de Streamlit la realiza el núcleo original.
-# Evitamos una segunda llamada a set_page_config para que la app arranque
-# de forma estable en Streamlit Cloud.
-import _app_core  # noqa: E402,F401
+# =========================================================
+# CONFIGURACIÓN Y CAPA VISUAL NNEE
+# =========================================================
+# La configuración se hace aquí antes de ejecutar el núcleo.
+# Así podemos mantener el núcleo de corrección intacto y aplicar
+# la presentación accesible de forma estable.
 
-# =========================================================
-# CAPA VISUAL NNEE
-# =========================================================
-# Se aplica después del núcleo para no tocar la lógica de corrección.
-# Los separadores internos se ocultan y cada h2 (sección principal)
-# marca el comienzo de un bloque completo.
+st.set_page_config(
+    page_title="Evaluación Inicial Lengua 2.º ESO — NNEE",
+    page_icon="📚",
+    layout="centered",
+)
 
 st.markdown(
     """
@@ -68,6 +71,12 @@ st.markdown(
         line-height: 1.8 !important;
     }
 
+    /* Lo importante se identifica por color, no solo por negrita */
+    strong, b {
+        color: #b00020 !important;
+        font-weight: 700 !important;
+    }
+
     textarea, input,
     [data-baseweb="select"] {
         font-family: "Trebuchet MS", Verdana, sans-serif !important;
@@ -107,7 +116,61 @@ st.markdown(
     hr {
         display: none !important;
     }
+
+    /* Al imprimir: cada bloque principal comienza en una página nueva.
+       En pantalla no cambia la navegación ni añade complejidad al formulario. */
+    @media print {
+        h2 {
+            break-before: page;
+            page-break-before: always;
+        }
+
+        h2:first-of-type {
+            break-before: auto;
+            page-break-before: auto;
+        }
+    }
     </style>
     """,
     unsafe_allow_html=True,
+)
+
+
+# =========================================================
+# EJECUCIÓN DEL NÚCLEO ORIGINAL CON DOS AJUSTES DE EXAMEN
+# =========================================================
+# 1) El bloque de modalidad tiene ahora 3 preguntas (x4-x6).
+# 2) Al quedar 6 preguntas de sintaxis, cada una vale 1/6 del punto.
+# 3) La opción "exhortativa" se elimina del selector: se mantiene
+#    únicamente "imperativa" como modalidad para ese tipo de oración.
+#
+# El núcleo sigue siendo el original; solo se neutralizan aquí las partes
+# que dependen del número de preguntas y de las opciones mostradas.
+
+core_path = Path(__file__).with_name("_app_core.py")
+core_source = core_path.read_text(encoding="utf-8")
+
+core_source = core_source.replace(
+    '''st.set_page_config(\n    page_title="Evaluación Inicial Lengua 2.º ESO*",\n    page_icon="📚",\n    layout="centered",\n)\n''',
+    "",
+)
+
+core_source = core_source.replace(
+    "1.0 / 7",
+    "1.0 / 6",
+)
+
+core_source = core_source.replace(
+    '                    "exhortativa",\n',
+    "",
+)
+
+core_namespace = {
+    "__name__": "_app_core",
+    "__file__": str(core_path),
+}
+
+exec(
+    compile(core_source, str(core_path), "exec"),
+    core_namespace,
 )
