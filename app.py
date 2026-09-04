@@ -5,9 +5,6 @@ import streamlit as st
 # =========================================================
 # CONFIGURACIÓN Y CAPA VISUAL NNEE
 # =========================================================
-# La configuración se hace aquí antes de ejecutar el núcleo.
-# Así podemos mantener el núcleo de corrección intacto y aplicar
-# la presentación accesible de forma estable.
 
 st.set_page_config(
     page_title="Evaluación Inicial Lengua 2.º ESO — NNEE",
@@ -30,7 +27,6 @@ st.markdown(
         padding-bottom: 4rem;
     }
 
-    /* Título claramente diferenciado como versión NNEE */
     h1 {
         font-size: 2.15rem !important;
         line-height: 1.25 !important;
@@ -71,8 +67,21 @@ st.markdown(
         line-height: 1.8 !important;
     }
 
-    /* Lo importante se identifica por color, no solo por negrita */
+    /* La negrita vuelve a ser neutra. El rojo se reserva para lo importante. */
     strong, b {
+        color: inherit !important;
+        font-weight: 700 !important;
+    }
+
+    .pregunta-roja {
+        color: #b00020 !important;
+        font-weight: 700 !important;
+        font-size: 1.12rem !important;
+        line-height: 1.7 !important;
+        margin-bottom: 0.15rem !important;
+    }
+
+    .etiqueta-roja {
         color: #b00020 !important;
         font-weight: 700 !important;
     }
@@ -112,7 +121,7 @@ st.markdown(
         outline-offset: 2px !important;
     }
 
-    /* Resultado final: mucho más visible y centrado */
+    /* Resultado final: grande, centrado y con la misma tipografía adaptada. */
     [data-testid="stMetric"] {
         text-align: center !important;
         margin: 1.8rem 0 2.4rem 0 !important;
@@ -142,13 +151,6 @@ st.markdown(
         font-family: "Trebuchet MS", Verdana, sans-serif !important;
     }
 
-    /* No queremos una raya entre cada pregunta */
-    hr {
-        display: none !important;
-    }
-
-    /* Al imprimir: cada bloque principal comienza en una página nueva.
-       En pantalla no cambia la navegación ni añade complejidad al formulario. */
     @media print {
         h2 {
             break-before: page;
@@ -167,21 +169,19 @@ st.markdown(
 
 
 # =========================================================
-# EJECUCIÓN DEL NÚCLEO ORIGINAL CON AJUSTES DE EXAMEN Y PRESENTACIÓN
+# EJECUCIÓN DEL NÚCLEO CON AJUSTES DE PRESENTACIÓN
 # =========================================================
-# 1) El bloque de modalidad tiene ahora 3 preguntas (x4-x6).
-# 2) Al quedar 6 preguntas de sintaxis, cada una vale 1/6 del punto.
-# 3) La opción "exhortativa" se elimina del selector: se mantiene
-#    únicamente "imperativa" como modalidad para ese tipo de oración.
-# 4) En semántica se evita repetir "¿qué relación semántica...?".
-# 5) La nota final se presenta grande, centrada y con la misma tipografía
-#    accesible que el resto de la aplicación.
 
 core_path = Path(__file__).with_name("_app_core.py")
 core_source = core_path.read_text(encoding="utf-8")
 
 core_source = core_source.replace(
-    '''st.set_page_config(\n    page_title="Evaluación Inicial Lengua 2.º ESO*",\n    page_icon="📚",\n    layout="centered",\n)\n''',
+    '''st.set_page_config(
+    page_title="Evaluación Inicial Lengua 2.º ESO*",
+    page_icon="📚",
+    layout="centered",
+)
+''',
     "",
 )
 
@@ -195,22 +195,349 @@ core_source = core_source.replace(
     "",
 )
 
-# En semántica mantenemos las preguntas claras, pero evitamos la repetición
-# de la expresión "relación semántica" en las tres preguntas.
+# ---------------------------------------------------------
+# 1. COMPRENSIÓN: preguntas 1-3 en rojo
+# ---------------------------------------------------------
 core_source = core_source.replace(
-    '"**Frío / calor** → ¿qué relación semántica tienen?"',
-    '"**Frío / calor** → ¿qué tipo de relación tienen?"',
-)
-core_source = core_source.replace(
-    '"**Perro, gato, caballo** → ¿qué relación semántica tienen?"',
-    '"**Perro, gato, caballo** → ¿qué tipo de relación forman?"',
+    '''        respuestas[pid] = st.text_input(
+            pregunta["enunciado"],
+            help=(
+                "Escribe una respuesta breve."
+                if pid != "c4"
+                else
+                "Escribe tres acciones separadas por comas."
+            ),
+            key=pid,
+        )''',
+    '''        if pid in ["c1", "c2", "c3"]:
+            st.markdown(
+                f'<div class="pregunta-roja">{pregunta["enunciado"]}</div>',
+                unsafe_allow_html=True,
+            )
+            respuestas[pid] = st.text_input(
+                "",
+                help="Escribe una respuesta breve.",
+                key=pid,
+                label_visibility="collapsed",
+            )
+        else:
+            respuestas[pid] = st.text_input(
+                pregunta["enunciado"],
+                help="Escribe tres acciones separadas por comas.",
+                key=pid,
+            )'''
 )
 
-# Sustituimos solo el metric de la nota final por un contenedor sencillo.
-# El CSS anterior se ocupa de darle tamaño, peso, color y centrado.
+# ---------------------------------------------------------
+# 2. MORFOLOGÍA: indicar claramente qué debe escribir
+# ---------------------------------------------------------
 core_source = core_source.replace(
-    '''    st.metric(\n        "NOTA FINAL",\n        f"{nota_final:.2f}/10",\n    )''',
-    '''    st.metric(\n        "NOTA FINAL",\n        f"{nota_final:.2f}/10",\n    )''',
+    '''            if campo == "Estructura":
+
+                valor = st.selectbox(
+                    f"{palabra['palabra']} → {campo}",''',
+    '''            if campo == "Estructura":
+
+                valor = st.selectbox(
+                    "Escribe la estructura de " + palabra["palabra"],'''
+)
+
+core_source = core_source.replace(
+    '''            elif campo == "V/I":
+
+                valor = st.selectbox(
+                    f"{palabra['palabra']} → {campo}",''',
+    '''            elif campo == "V/I":
+
+                valor = st.selectbox(
+                    "Escribe si " + palabra["palabra"] + " es variable o invariable",'''
+)
+
+core_source = core_source.replace(
+    '''            elif campo == "Categoría gramatical":
+
+                valor = st.text_input(
+                    f"{palabra['palabra']} → {campo}",''',
+    '''            elif campo == "Categoría gramatical":
+
+                valor = st.text_input(
+                    "Escribe la categoría gramatical de " + palabra["palabra"],'''
+)
+
+core_source = core_source.replace(
+    '''            else:
+
+                valor = st.text_input(
+                    f"{palabra['palabra']} → {campo}",''',
+    '''            else:
+
+                etiqueta_campo = {
+                    "Lexema": "Escribe el lexema de ",
+                    "Morfemas": "Escribe los morfemas de ",
+                }.get(campo, f"{campo} de ")
+
+                valor = st.text_input(
+                    etiqueta_campo + palabra["palabra"],'''
+)
+
+# ---------------------------------------------------------
+# 3. SEMÁNTICA: una sola aparición de las palabras dadas;
+#    "relación semántica" queda resaltado en rojo.
+# ---------------------------------------------------------
+semantic_block_old = '''    for pregunta in EXAM[
+        "semantica"
+    ]:
+
+        st.write(
+            f"**{pregunta['elemento']}**"
+        )
+
+        respuestas[
+            pregunta["id"]
+        ] = st.selectbox(
+
+            pregunta["enunciado"],
+
+            opciones_semantica,
+
+            key=pregunta["id"],
+        )'''
+
+semantic_block_new = '''    for pregunta in EXAM[
+        "semantica"
+    ]:
+
+        elemento = pregunta["elemento"]
+        enunciado = pregunta["enunciado"]
+
+        # Solo mostramos una vez las palabras dadas.
+        if "relación semántica" in enunciado:
+            texto_pregunta = enunciado.split("→", 1)[-1].strip()
+            texto_pregunta = texto_pregunta.replace(
+                "¿qué relación semántica tienen?",
+                '<span class="etiqueta-roja">¿qué relación semántica tienen?</span>'
+            )
+        else:
+            texto_pregunta = enunciado.split("→", 1)[-1].strip()
+
+        st.markdown(
+            f'<div class="pregunta-roja">{elemento} → {texto_pregunta}</div>',
+            unsafe_allow_html=True,
+        )
+
+        respuestas[
+            pregunta["id"]
+        ] = st.selectbox(
+            "",
+            opciones_semantica,
+            key=pregunta["id"],
+            label_visibility="collapsed",
+        )'''
+
+core_source = core_source.replace(
+    semantic_block_old,
+    semantic_block_new,
+)
+
+# También corregimos las dos formulaciones que había modificado el wrapper anterior.
+core_source = core_source.replace(
+    '"**Frío / calor** → ¿qué tipo de relación tienen?"',
+    '"**Frío / calor** → ¿qué relación semántica tienen?"',
+)
+core_source = core_source.replace(
+    '"**Perro, gato, caballo** → ¿qué tipo de relación forman?"',
+    '"**Perro, gato, caballo** → ¿qué relación semántica tienen?"',
+)
+
+# ---------------------------------------------------------
+# 4. TIPOS DE TEXTO: cada texto seguido inmediatamente de su pregunta.
+# ---------------------------------------------------------
+textos_block_old = '''    for letra, texto in EXAM[
+        "textos"
+    ]["textos"].items():
+
+        st.markdown(
+            f"**Texto {letra}:** {texto}"
+        )
+
+    for pregunta in EXAM[
+        "textos"
+    ]["preguntas"]:
+
+        respuestas[
+            pregunta["id"]
+        ] = st.selectbox(
+
+            pregunta["enunciado"],
+
+            opciones_texto,
+
+            key=pregunta["id"],
+        )'''
+
+textos_block_new = '''    textos = EXAM["textos"]["textos"]
+    preguntas_textos = EXAM["textos"]["preguntas"]
+
+    for indice, (letra, texto) in enumerate(textos.items()):
+
+        st.markdown(
+            f"**Texto {letra}:** {texto}"
+        )
+
+        if indice < len(preguntas_textos):
+            pregunta = preguntas_textos[indice]
+            respuestas[pregunta["id"]] = st.selectbox(
+                pregunta["enunciado"],
+                opciones_texto,
+                key=pregunta["id"],
+            )'''
+
+core_source = core_source.replace(
+    textos_block_old,
+    textos_block_new,
+)
+
+# ---------------------------------------------------------
+# 5. EXCEL: misma estructura de exportación individual que
+#    el examen ordinario, adaptada a los campos NNEE.
+# ---------------------------------------------------------
+excel_function = r'''
+
+def excel_individual(fila, respuestas, perfil):
+    from openpyxl import Workbook
+    from openpyxl.styles import Font, Alignment
+
+    wb = Workbook()
+
+    # HOJA 1: RESULTADO
+    ws = wb.active
+    ws.title = "Resultado"
+
+    ws["A1"] = "📚 Evaluación inicial de Lengua — 2.º ESO"
+    ws["A1"].font = Font(bold=True, size=16)
+
+    ws["A3"] = "Alumno"
+    ws["B3"] = fila["name"]
+    ws["A4"] = "Grupo"
+    ws["B4"] = fila["group"]
+    ws["A5"] = "Fecha y hora"
+    ws["B5"] = fila["date"]
+
+    ws["A7"] = "NOTA FINAL (SOBRE 10)"
+    ws["B7"] = fila["nota_final"]
+
+    ws["A9"] = "RESULTADOS POR ÁREAS"
+    ws["A9"].font = Font(bold=True)
+
+    fila_excel = 10
+    for clave, nombre_area in NOMBRES.items():
+        ws.cell(fila_excel, 1).value = nombre_area
+        ws.cell(fila_excel, 2).value = fila[clave]
+        fila_excel += 1
+
+    ws[f"A{fila_excel + 1}"] = "PERFIL COMPETENCIAL"
+    ws[f"A{fila_excel + 1}"].font = Font(bold=True)
+
+    fila_perfil = fila_excel + 2
+    for item in perfil:
+        ws.cell(fila_perfil, 1).value = item["texto"]
+        ws.cell(fila_perfil, 1).alignment = Alignment(
+            wrap_text=True,
+            vertical="top"
+        )
+        fila_perfil += 1
+
+    ws.column_dimensions["A"].width = 48
+    ws.column_dimensions["B"].width = 30
+
+    # HOJA 2: RESPUESTAS
+    ws2 = wb.create_sheet("Respuestas")
+    ws2["A1"] = "Pregunta"
+    ws2["B1"] = "Respuesta"
+    ws2["A1"].font = Font(bold=True)
+    ws2["B1"].font = Font(bold=True)
+
+    fila_respuesta = 2
+    for pregunta, respuesta in respuestas.items():
+        ws2.cell(fila_respuesta, 1).value = pregunta
+        ws2.cell(fila_respuesta, 2).value = str(respuesta)
+        ws2.cell(fila_respuesta, 2).alignment = Alignment(
+            wrap_text=True,
+            vertical="top"
+        )
+        fila_respuesta += 1
+
+    ws2.column_dimensions["A"].width = 25
+    ws2.column_dimensions["B"].width = 80
+
+    salida = io.BytesIO()
+    wb.save(salida)
+    salida.seek(0)
+    return salida.getvalue()
+'''
+
+core_source = core_source.replace(
+    '\n\ndef safe_read_results():',
+    excel_function + '\n\ndef safe_read_results():',
+)
+
+# Añadimos el botón Excel justo después del CSV, igual que en el ordinario.
+excel_download = '''
+
+    st.download_button(
+        "📊 Descargar Excel",
+        data=excel_individual(
+            fila,
+            st.session_state.get("respuestas", {}),
+            generar_perfil(scores),
+        ),
+        file_name=(
+            "Resultado_2ESO_NEE_"
+            + re.sub(
+                r"[^A-Za-z0-9_-]+",
+                "_",
+                nombre_resultado,
+            )
+            + ".xlsx"
+        ),
+        mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        use_container_width=True,
+    )
+'''
+
+# Guardamos las respuestas para que estén disponibles al volver a ejecutar.
+core_source = core_source.replace(
+    '''    st.session_state[
+        "fila"
+    ] = fila
+
+    st.rerun()''',
+    '''    st.session_state[
+        "fila"
+    ] = fila
+
+    st.session_state[
+        "respuestas"
+    ] = respuestas
+
+    st.rerun()'''
+)
+
+# El bloque de resultados tiene el CSV del ordinario; insertamos Excel debajo.
+marker = '''        use_container_width=True,
+    )
+
+
+    # =====================================================
+    # ESTADÍSTICAS DEL GRUPO'''
+core_source = core_source.replace(
+    marker,
+    '''        use_container_width=True,
+    )
+''' + excel_download + '''
+
+    # =====================================================
+    # ESTADÍSTICAS DEL GRUPO''',
 )
 
 core_namespace = {
