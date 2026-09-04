@@ -67,7 +67,6 @@ st.markdown(
         line-height: 1.8 !important;
     }
 
-    /* La negrita vuelve a ser neutra. El rojo se reserva para lo importante. */
     strong, b {
         color: inherit !important;
         font-weight: 700 !important;
@@ -84,6 +83,12 @@ st.markdown(
     .etiqueta-roja {
         color: #b00020 !important;
         font-weight: 700 !important;
+    }
+
+    .pregunta-semantica {
+        font-size: 1.12rem !important;
+        line-height: 1.7 !important;
+        margin-bottom: 0.15rem !important;
     }
 
     textarea, input,
@@ -121,7 +126,6 @@ st.markdown(
         outline-offset: 2px !important;
     }
 
-    /* Resultado final: grande, centrado y con la misma tipografía adaptada. */
     [data-testid="stMetric"] {
         text-align: center !important;
         margin: 1.8rem 0 2.4rem 0 !important;
@@ -185,15 +189,8 @@ core_source = core_source.replace(
     "",
 )
 
-core_source = core_source.replace(
-    "1.0 / 7",
-    "1.0 / 6",
-)
-
-core_source = core_source.replace(
-    '                    "exhortativa",\n',
-    "",
-)
+core_source = core_source.replace("1.0 / 7", "1.0 / 6")
+core_source = core_source.replace('                    "exhortativa",\n', "")
 
 # ---------------------------------------------------------
 # 1. COMPRENSIÓN: preguntas 1-3 en rojo
@@ -229,7 +226,7 @@ core_source = core_source.replace(
 )
 
 # ---------------------------------------------------------
-# 2. MORFOLOGÍA: indicar claramente qué debe escribir
+# 2. MORFOLOGÍA: indicar qué debe escribir en cada hueco
 # ---------------------------------------------------------
 core_source = core_source.replace(
     '''            if campo == "Estructura":
@@ -281,8 +278,8 @@ core_source = core_source.replace(
 )
 
 # ---------------------------------------------------------
-# 3. SEMÁNTICA: una sola aparición de las palabras dadas;
-#    "relación semántica" queda resaltado en rojo.
+# 3. SEMÁNTICA: las palabras dadas aparecen una sola vez.
+#    Solo se resaltan en rojo las palabras realmente importantes.
 # ---------------------------------------------------------
 semantic_block_old = '''    for pregunta in EXAM[
         "semantica"
@@ -310,18 +307,19 @@ semantic_block_new = '''    for pregunta in EXAM[
         elemento = pregunta["elemento"]
         enunciado = pregunta["enunciado"]
 
-        # Solo mostramos una vez las palabras dadas.
         if "relación semántica" in enunciado:
-            texto_pregunta = enunciado.split("→", 1)[-1].strip()
-            texto_pregunta = texto_pregunta.replace(
-                "¿qué relación semántica tienen?",
-                '<span class="etiqueta-roja">¿qué relación semántica tienen?</span>'
+            pregunta_html = (
+                f'<span class="etiqueta-roja">{elemento}</span> '
+                '→ ¿qué <span class="etiqueta-roja">relación semántica</span> tienen?'
             )
         else:
-            texto_pregunta = enunciado.split("→", 1)[-1].strip()
+            pregunta_html = (
+                f'<span class="etiqueta-roja">{elemento}</span> '
+                '→ ¿qué fenómeno semántico aparece?'
+            )
 
         st.markdown(
-            f'<div class="pregunta-roja">{elemento} → {texto_pregunta}</div>',
+            f'<div class="pregunta-semantica">{pregunta_html}</div>',
             unsafe_allow_html=True,
         )
 
@@ -339,7 +337,6 @@ core_source = core_source.replace(
     semantic_block_new,
 )
 
-# También corregimos las dos formulaciones que había modificado el wrapper anterior.
 core_source = core_source.replace(
     '"**Frío / calor** → ¿qué tipo de relación tienen?"',
     '"**Frío / calor** → ¿qué relación semántica tienen?"',
@@ -350,7 +347,7 @@ core_source = core_source.replace(
 )
 
 # ---------------------------------------------------------
-# 4. TIPOS DE TEXTO: cada texto seguido inmediatamente de su pregunta.
+# 4. TIPOS DE TEXTO: cada texto lleva inmediatamente debajo su pregunta.
 # ---------------------------------------------------------
 textos_block_old = '''    for letra, texto in EXAM[
         "textos"
@@ -398,8 +395,7 @@ core_source = core_source.replace(
 )
 
 # ---------------------------------------------------------
-# 5. EXCEL: misma estructura de exportación individual que
-#    el examen ordinario, adaptada a los campos NNEE.
+# 5. EXCEL: misma estructura de exportación individual que el ordinario.
 # ---------------------------------------------------------
 excel_function = r'''
 
@@ -409,7 +405,6 @@ def excel_individual(fila, respuestas, perfil):
 
     wb = Workbook()
 
-    # HOJA 1: RESULTADO
     ws = wb.active
     ws.title = "Resultado"
 
@@ -450,7 +445,6 @@ def excel_individual(fila, respuestas, perfil):
     ws.column_dimensions["A"].width = 48
     ws.column_dimensions["B"].width = 30
 
-    # HOJA 2: RESPUESTAS
     ws2 = wb.create_sheet("Respuestas")
     ws2["A1"] = "Pregunta"
     ws2["B1"] = "Respuesta"
@@ -481,8 +475,34 @@ core_source = core_source.replace(
     excel_function + '\n\ndef safe_read_results():',
 )
 
-# Añadimos el botón Excel justo después del CSV, igual que en el ordinario.
-excel_download = '''
+# Las respuestas quedan disponibles después del rerun de Streamlit.
+core_source = core_source.replace(
+    '''    st.session_state[
+        "fila"
+    ] = fila
+
+    st.rerun()''',
+    '''    st.session_state[
+        "fila"
+    ] = fila
+
+    st.session_state[
+        "respuestas"
+    ] = respuestas
+
+    st.rerun()'''
+)
+
+# Botón Excel junto al CSV, como en el examen ordinario.
+marker = '''        use_container_width=True,
+    )
+
+
+    # =====================================================
+    # ESTADÍSTICAS DEL GRUPO'''
+
+excel_download = '''        use_container_width=True,
+    )
 
     st.download_button(
         "📊 Descargar Excel",
@@ -503,42 +523,12 @@ excel_download = '''
         mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
         use_container_width=True,
     )
-'''
-
-# Guardamos las respuestas para que estén disponibles al volver a ejecutar.
-core_source = core_source.replace(
-    '''    st.session_state[
-        "fila"
-    ] = fila
-
-    st.rerun()''',
-    '''    st.session_state[
-        "fila"
-    ] = fila
-
-    st.session_state[
-        "respuestas"
-    ] = respuestas
-
-    st.rerun()'''
-)
-
-# El bloque de resultados tiene el CSV del ordinario; insertamos Excel debajo.
-marker = '''        use_container_width=True,
-    )
 
 
     # =====================================================
     # ESTADÍSTICAS DEL GRUPO'''
-core_source = core_source.replace(
-    marker,
-    '''        use_container_width=True,
-    )
-''' + excel_download + '''
 
-    # =====================================================
-    # ESTADÍSTICAS DEL GRUPO''',
-)
+core_source = core_source.replace(marker, excel_download)
 
 core_namespace = {
     "__name__": "_app_core",
