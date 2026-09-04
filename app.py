@@ -1,5 +1,3 @@
-import streamlit as st
-
-# La aplicación NNEE mantiene el núcleo estable y aplica aquí únicamente
-# la presentación accesible. No se ejecuta código fuente dinámicamente.
-from _app_core import *
+# Punto de entrada estable de la aplicación NNEE.
+# El código de la aplicación se mantiene en _app_core.py.
+import _app_core
