@@ -18,13 +18,45 @@ st.set_page_config = lambda *args, **kwargs: None
 
 
 # ---------------------------------------------------------
-# Capa visual: tipografía local y lectura fácil
+# Adaptador de secciones
 # ---------------------------------------------------------
-# No depende de Google Fonts ni de ninguna fuente externa.
-# Trebuchet MS suele estar disponible en Windows y tiene formas
-# de letras diferenciadas y una apariencia más humanista que Arial.
-# Se deja Verdana como respaldo local.
+# No queremos una raya antes de cada pregunta. El examen se presenta
+# por bloques completos: Comprensión, Morfología, Semántica, etc.
+# Solo se marca visualmente el comienzo de cada bloque.
 
+_original_header = st.header
+_original_divider = st.divider
+
+
+def _inicio_bloque():
+    st.markdown(
+        '<div class="bloque" aria-hidden="true"></div>',
+        unsafe_allow_html=True,
+    )
+
+
+def _header(*args, **kwargs):
+    _inicio_bloque()
+    return _original_header(*args, **kwargs)
+
+
+def _divider(*args, **kwargs):
+    # Los separadores internos dejan de generar líneas adicionales.
+    # El comienzo de cada bloque ya queda marcado por .bloque.
+    return None
+
+
+st.header = _header
+st.divider = _divider
+
+
+# Ejecutamos el examen original.
+import _app_core  # noqa: E402,F401
+
+
+# ---------------------------------------------------------
+# Capa visual: se aplica DESPUÉS del núcleo para que prevalezca.
+# ---------------------------------------------------------
 st.markdown(
     """
     <style>
@@ -58,26 +90,15 @@ st.markdown(
     }
 
     /*
-       .bloque es el espacio visual que separa cada pregunta.
-       Se inserta antes de cada campo de respuesta mediante el
-       pequeño adaptador de abajo. La línea superior ayuda a que
-       cada ejercicio se perciba como una unidad independiente.
+       Un bloque corresponde a una sección completa del examen.
+       Hay una sola separación visible entre secciones, no entre preguntas.
     */
     .bloque {
         display: block;
         width: 100%;
-        min-height: 28px;
-        margin: 2rem 0 1.4rem 0;
-        border-top: 2px solid #b8b8b8;
-    }
-
-    /* Separadores de sección del examen */
-    [data-testid="stMarkdownContainer"] hr,
-    [data-testid="stDivider"] {
-        border: 0 !important;
-        border-top: 3px solid #777 !important;
-        margin: 3rem 0 !important;
-        opacity: 1 !important;
+        height: 0;
+        margin: 3.2rem 0 2rem 0;
+        border-top: 3px solid #777;
     }
 
     h1, h2, h3, h4 {
@@ -110,13 +131,11 @@ st.markdown(
         letter-spacing: 0.01em;
     }
 
-    /* Texto de los enunciados y fragmentos del examen */
     [data-testid="stMarkdownContainer"] {
         font-size: 1.12rem !important;
         line-height: 1.8 !important;
     }
 
-    /* Campos de respuesta grandes y cómodos para escribir */
     textarea, input,
     [data-baseweb="select"] {
         font-family: "Trebuchet MS", Verdana, sans-serif !important;
@@ -133,7 +152,6 @@ st.markdown(
         min-height: 8rem !important;
     }
 
-    /* Más espacio alrededor de cada widget de respuesta */
     [data-testid="stTextInput"],
     [data-testid="stTextArea"],
     [data-testid="stSelectbox"],
@@ -141,14 +159,12 @@ st.markdown(
         margin-bottom: 1.1rem !important;
     }
 
-    /* Botón final claramente identificable */
     button[kind="primary"] {
         font-size: 1.15rem !important;
         min-height: 3.6rem !important;
         margin-top: 2rem !important;
     }
 
-    /* El foco del teclado queda muy visible */
     input:focus, textarea:focus,
     div[data-baseweb="select"]:focus-within {
         outline: 3px solid #555 !important;
@@ -158,60 +174,3 @@ st.markdown(
     """,
     unsafe_allow_html=True,
 )
-
-
-# ---------------------------------------------------------
-# Adaptadores de los campos de respuesta
-# ---------------------------------------------------------
-# Antes de cada respuesta insertamos .bloque. Así no hay que tocar
-# la lógica de corrección ni las claves de las respuestas del examen.
-
-_original_text_input = st.text_input
-_original_text_area = st.text_area
-_original_selectbox = st.selectbox
-_original_number_input = st.number_input
-_original_divider = st.divider
-
-
-def _bloque():
-    st.markdown(
-        '<div class="bloque" aria-hidden="true"></div>',
-        unsafe_allow_html=True,
-    )
-
-
-def _text_input(*args, **kwargs):
-    _bloque()
-    return _original_text_input(*args, **kwargs)
-
-
-def _text_area(*args, **kwargs):
-    _bloque()
-    return _original_text_area(*args, **kwargs)
-
-
-def _selectbox(*args, **kwargs):
-    _bloque()
-    return _original_selectbox(*args, **kwargs)
-
-
-def _number_input(*args, **kwargs):
-    _bloque()
-    return _original_number_input(*args, **kwargs)
-
-
-def _divider(*args, **kwargs):
-    # Conservamos st.divider(), pero hacemos que el separador sea
-    # mucho más visible en la versión adaptada.
-    return _original_divider(*args, **kwargs)
-
-
-st.text_input = _text_input
-st.text_area = _text_area
-st.selectbox = _selectbox
-st.number_input = _number_input
-st.divider = _divider
-
-
-# Ejecutamos el examen original sin modificar su corrección.
-import _app_core  # noqa: E402,F401
