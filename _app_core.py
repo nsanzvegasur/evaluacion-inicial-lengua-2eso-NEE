@@ -11,13 +11,10 @@ from openpyxl import Workbook
 
 from examen2ESO_NEE import EXAMEN
 
-st.set_page_config(page_title="Evaluación inicial Lengua 2.º ESO", page_icon="📚", layout="centered")
+st.set_page_config(page_title="Evaluación inicial Lengua 2.º ESO NNEE", page_icon="📚", layout="centered")
 CSV_FILE = "results.csv"
 EXAM = EXAMEN["2ESO_NEE"]
 
-# ---------------------------------------------------------
-# ESTILO ACCESIBLE: sin fuentes externas
-# ---------------------------------------------------------
 st.markdown("""
 <style>
 html, body, [class*="css"], .stApp, input, textarea, button, select, div[data-baseweb="select"] {
@@ -39,7 +36,6 @@ textarea, input { font-size: 1.08rem !important; }
 </style>
 """, unsafe_allow_html=True)
 
-
 def normalizar(v):
     if v is None: return ""
     s = str(v).strip().lower()
@@ -47,23 +43,18 @@ def normalizar(v):
     s = "".join(c for c in s if unicodedata.category(c) != "Mn")
     return re.sub(r"\s+", " ", s).strip()
 
-
 def lista(v):
     return [normalizar(x) for x in re.split(r"[,;\n]+", str(v or "")) if normalizar(x)]
-
 
 def exacta(v, *ops):
     n = normalizar(v)
     return bool(n) and any(n == normalizar(x) for x in ops)
 
-
 def contiene(v, *ops):
     n = normalizar(v)
     return bool(n) and any(normalizar(x) in n for x in ops)
 
-
 def rojo_marcadores(texto):
-    """Convierte solo **...** en rojo; el resto queda normal."""
     texto = str(texto)
     partes = re.split(r"(\*\*.*?\*\*)", texto, flags=re.S)
     salida = []
@@ -74,10 +65,8 @@ def rojo_marcadores(texto):
             salida.append(p.replace("\n", "<br>"))
     return "".join(salida)
 
-
 def bloque_html(contenido):
     st.markdown(f'<div class="bloque">{contenido}</div>', unsafe_allow_html=True)
-
 
 def detectar_ortografia(respuestas):
     faltas = {"sustantibo", "haver", "hechar", "aver", "aora", "havia", "hamos", "bamos", "llendo", "dijistes", "hicistes", "estava", "tubieron", "tubo"}
@@ -87,10 +76,8 @@ def detectar_ortografia(respuestas):
         if not respuesta: continue
         palabras = re.findall(r"\b[\wáéíóúüñ]+\b", str(respuesta).lower(), flags=re.UNICODE)
         nf += sum(p in faltas for p in palabras)
-        # Solo contamos como falta de tilde formas inequívocas en respuestas escritas.
         nt += sum(p in tildes for p in palabras)
     return nf, nt
-
 
 def corregir(res):
     p = {"comprension":0.0,"morfologia":0.0,"semantica":0.0,"textos":0.0,"literatura":0.0,"sintaxis":0.0}
@@ -102,9 +89,8 @@ def corregir(res):
     acciones = {"llego","cubria","veia","viajaban","llevaba","parecia","dormia","bajo"}
     halladas = {a for a in acciones if a in normalizar(res.get("c4"))}
     p["comprension"] += min(3,len(halladas))/3*.50
-
     claves = {
-      "m1": {"lexema":"silenci","morfemas":"o","estructura":"simple","categoria":["sustantivo","masculino","singular"],"vi":"variable"},
+      "m1": {"lexema":"niñ","morfemas":["o","s"],"estructura":"simple","categoria":["sustantivo","masculino","plural"],"vi":"variable"},
       "m2": {"lexema":"mochil","morfemas":["a","s"],"estructura":"simple","categoria":["sustantivo","femenino","plural"],"vi":"variable"},
       "m3": {"lexema":"conoc","morfemas":["des","ido"],"estructura":"derivada","categoria":["adjetivo","masculino","singular"],"vi":"variable"}}
     pesos = {"lexema":.10,"morfemas":.10,"estructura":.10,"categoria":.15,"vi":.05}
@@ -119,13 +105,10 @@ def corregir(res):
             if ok: p["morfologia"] += pesos[campo]
     if exacta(res.get("dp1"),"determinante"): p["morfologia"] += .50
     if exacta(res.get("dp2"),"pronombre"): p["morfologia"] += .50
-
     for k, ok in {"s1":"antonimia","s2":"campo semantico","s3":"polisemia"}.items():
         if exacta(res.get(k), ok): p["semantica"] += 1/3
-
     if exacta(res.get("t1"),"instructivo","instruccional"): p["textos"] += .75
     if exacta(res.get("t2"),"expositivo"): p["textos"] += .75
-
     if exacta(res.get("l1"),"4"): p["literatura"] += .30
     if exacta(res.get("l2"),"arte mayor"): p["literatura"] += .30
     m = normalizar(res.get("l3")).replace(","," ").replace("/"," ").replace("-"," ")
@@ -133,26 +116,19 @@ def corregir(res):
     if exacta(res.get("l4"),"asonante","rima asonante"): p["literatura"] += .35
     if contiene(res.get("l5"),"sobre el","brillan sobre","susurra cerca","mira el"): p["literatura"] += .35
     if contiene(res.get("l6"),"viento") and contiene(res.get("l6"),"susurra"): p["literatura"] += .35
-
     correctas = {"x1":"frase","x2":"oracion","x3":"oracion","x4":"interrogativa","x5":"exclamativa","x6":"enunciativa"}
     for k,v in correctas.items():
         if exacta(res.get(k),v): p["sintaxis"] += 1/6
     return p, round(sum(p.values()),2)
 
-
 def csv_bytes(fila):
     out=io.StringIO(); w=csv.DictWriter(out,fieldnames=list(fila)); w.writeheader(); w.writerow(fila); return out.getvalue().encode("utf-8-sig")
 
-
 def excel_bytes(fila):
     wb=Workbook(); ws=wb.active; ws.title="Resultado"
-    campos=list(fila)
-    ws.append(campos); ws.append([fila[c] for c in campos])
-    ws.freeze_panes="A2"
-    for col in ws.columns:
-        ws.column_dimensions[col[0].column_letter].width=max(14,min(34,max(len(str(x.value or "")) for x in col)+2))
+    campos=list(fila); ws.append(campos); ws.append([fila[c] for c in campos]); ws.freeze_panes="A2"
+    for col in ws.columns: ws.column_dimensions[col[0].column_letter].width=max(14,min(34,max(len(str(x.value or "")) for x in col)+2))
     out=io.BytesIO(); wb.save(out); return out.getvalue()
-
 
 def guardar_csv(fila):
     campos=list(fila)
@@ -165,13 +141,8 @@ def guardar_csv(fila):
     df=pd.concat([df[campos],pd.DataFrame([fila])],ignore_index=True)
     df.to_csv(CSV_FILE,index=False,encoding="utf-8-sig")
 
-
-# ---------------------------------------------------------
-# CABECERA
-# ---------------------------------------------------------
-st.markdown('<div class="titulo">Evaluación inicial de Lengua — 2.º ESO</div>', unsafe_allow_html=True)
+st.markdown('<div class="titulo">Evaluación inicial de Lengua — 2.º ESO · NNEE</div>', unsafe_allow_html=True)
 st.markdown('<div class="subtitulo">Lengua Castellana y Literatura · Curso 2026-2027</div>', unsafe_allow_html=True)
-st.markdown('<div class="ayuda"><b>AYUDA DURANTE EL EXAMEN:</b> puedes pulsar el botón de ayuda de cada pregunta para ver cómo debes introducir la respuesta.</div>', unsafe_allow_html=True)
 
 if st.session_state.get("enviado"):
     fila=st.session_state["fila"]; puntos=st.session_state["puntos"]; nota9=st.session_state["nota9"]
@@ -183,8 +154,7 @@ if st.session_state.get("enviado"):
     st.write(f"Faltas de tilde detectadas: {tildes}")
     st.caption("Los errores ortográficos y de tilde se cuentan como información de seguimiento, pero no restan puntos de la nota.")
     st.subheader("Resultado por áreas")
-    for c,mx in [("comprension",2),("morfologia",2.5),("semantica",1),("textos",1.5),("literatura",2),("sintaxis",1)]:
-        st.write(f"{c.capitalize()}: {puntos[c]/mx*10:.2f}/10")
+    for c,mx in [("comprension",2),("morfologia",2.5),("semantica",1),("textos",1.5),("literatura",2),("sintaxis",1)]: st.write(f"{c.capitalize()}: {puntos[c]/mx*10:.2f}/10")
     st.download_button("Descargar resultado CSV",csv_bytes(fila),file_name="Resultado_2ESO_NEE.csv",mime="text/csv",use_container_width=True)
     st.download_button("Descargar resultado Excel",excel_bytes(fila),file_name="Resultado_2ESO_NEE.xlsx",mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",use_container_width=True)
     if st.button("Volver al inicio",use_container_width=True): st.session_state.clear(); st.rerun()
@@ -195,7 +165,6 @@ grupo=st.selectbox("Grupo",["","2º A","2º B","2º C","2º D"])
 
 with st.form("examen_2eso_nee"):
     respuestas={}
-    # 1 Comprensión
     bloque_html("<h2>1. Comprensión lectora — 2 puntos</h2>" + EXAM["comprension"]["texto"].replace("\n","<br>"))
     for q in EXAM["comprension"]["preguntas"]:
         texto=rojo_marcadores(q["enunciado"])
@@ -204,23 +173,22 @@ with st.form("examen_2eso_nee"):
         st.markdown(texto,unsafe_allow_html=True)
     st.markdown('<div class="separador"></div>',unsafe_allow_html=True)
 
-    # 2 Morfología
-    bloque_html("<h2>2. Morfología — 2,5 puntos</h2><div class='ayuda'><b>Cómo responder:</b> separa los diferentes morfemas mediante comas y sin guion. Ejemplo: des, conocido, o. En «variable o invariable» escribe las palabras completas.</div>")
+    bloque_html("<h2>2. Morfología — 2,5 puntos</h2><div class='ayuda'><b>Cómo responder:</b> separa los diferentes morfemas mediante comas y sin guion.</div>")
     etiquetas={"Lexema":"lexema","Morfemas":"morfemas","Estructura":"estructura","Categoría gramatical":"categoría gramatical","V/I":"variable o invariable"}
     for palabra in EXAM["morfologia"]:
         st.markdown(f"<h3>{palabra['palabra']}</h3>",unsafe_allow_html=True)
         for campo in palabra["campos"]:
+            if campo == "V/I":
+                continue
             visible=etiquetas.get(campo,campo)
             label=f'<span class="rojo">{visible}</span>'
             st.markdown(label,unsafe_allow_html=True)
             key=f"{palabra['id']}_{normalizar(campo).replace(' ','_').replace('/','_')}"
             if campo=="Estructura": val=st.selectbox("",["","simple","derivada","compuesta","parasintética"],key=key,label_visibility="collapsed")
-            elif campo=="V/I": val=st.selectbox("",["","variable","invariable"],key=key,label_visibility="collapsed")
             else: val=st.text_input("",key=key,label_visibility="collapsed")
             respuestas[key]=val
     st.markdown('<div class="separador"></div>',unsafe_allow_html=True)
 
-    # 2.2
     bloque_html("<h2>2.2. Determinantes y pronombres</h2>")
     for q in EXAM["determinantes_pronombres"]:
         frase=q["frase"].replace("**Aquellos**","<span class='rojo'>Aquellos</span>").replace("**Nadie**","<span class='rojo'>Nadie</span>")
@@ -230,17 +198,13 @@ with st.form("examen_2eso_nee"):
         respuestas[q["id"]]=st.selectbox("",["","determinante","pronombre"],key=q["id"],label_visibility="collapsed")
     st.markdown('<div class="separador"></div>',unsafe_allow_html=True)
 
-    # 3 Semántica
     bloque_html("<h2>3. Semántica — 1 punto</h2>")
     opciones=["","antonimia","sinonimia","campo semántico","polisemia","homonimia","meronimia","hipónimos","hiperónimo"]
     for q in EXAM["semantica"]:
-        en=q["enunciado"].replace("**","<span class='rojo'>").replace(" →","</span> →",1)
-        # presentación única del ejemplo
         st.markdown(f"<span>{q['elemento']}</span> — <span class='rojo'>relación semántica</span>",unsafe_allow_html=True)
         respuestas[q["id"]]=st.selectbox("",opciones,key=q["id"],label_visibility="collapsed")
     st.markdown('<div class="separador"></div>',unsafe_allow_html=True)
 
-    # 4 Textos
     bloque_html("<h2>4. Tipos de texto — 1,5 puntos</h2><p>Lee cada texto y escribe el <span class='rojo'>tipo de texto</span>.</p>")
     opciones_t=["","narrativo","descriptivo","expositivo","argumentativo","instructivo","dialogado"]
     for letra in ["A","B"]:
@@ -250,17 +214,15 @@ with st.form("examen_2eso_nee"):
         respuestas[q["id"]]=st.selectbox("",opciones_t,key=q["id"],label_visibility="collapsed")
     st.markdown('<div class="separador"></div>',unsafe_allow_html=True)
 
-    # 5 Literatura
     bloque_html("<h2>5. Literatura — 2 puntos</h2>" + EXAM["literatura"]["poema"].replace("\n","<br>"))
     for q, opciones in zip(EXAM["literatura"]["preguntas"],[ ["","1","2","3","4","5","6","7","8"],["","arte menor","arte mayor"],None,["","asonante","consonante"],None,None ]):
-        en=rojo_marcadores(q["enunciado"]); st.markdown(en,unsafe_allow_html=True)
-        if q["id"]=="l3": val=st.text_input("",help="Puedes escribir: 10A 11B 11B 10A.",key=q["id"],label_visibility="collapsed")
+        st.markdown(rojo_marcadores(q["enunciado"]),unsafe_allow_html=True)
+        if q["id"]=="l3": val=st.text_input("",help="Puedes escribir el esquema métrico.",key=q["id"],label_visibility="collapsed")
         elif q["id"] in ("l5","l6"): val=st.text_input("",key=q["id"],label_visibility="collapsed")
         else: val=st.selectbox("",opciones,key=q["id"],label_visibility="collapsed")
         respuestas[q["id"]]=val
     st.markdown('<div class="separador"></div>',unsafe_allow_html=True)
 
-    # 6 Sintaxis
     bloque_html("<h2>6. Sintaxis — 1 punto</h2>")
     for q in EXAM["sintaxis"]:
         st.markdown(f"<span class='rojo'>{q['frase']}</span>",unsafe_allow_html=True)
@@ -270,7 +232,6 @@ with st.form("examen_2eso_nee"):
         respuestas[q["id"]]=st.selectbox("",ops,key=q["id"],label_visibility="collapsed")
     st.markdown('<div class="separador"></div>',unsafe_allow_html=True)
 
-    # 7 Diálogo
     bloque_html("<h2>7. Diálogo</h2>" + EXAM["dialogo"]["texto"].replace("\n","<br>"))
     for q in EXAM["dialogo"]["preguntas"]:
         st.markdown(rojo_marcadores(q["enunciado"]),unsafe_allow_html=True)
@@ -278,7 +239,6 @@ with st.form("examen_2eso_nee"):
         elif q["id"]=="d3": val=st.text_area("",height=100,key="d3",label_visibility="collapsed")
         else: val=st.text_input("",help="Escribe los dos interlocutores separados por comas.",key="d1",label_visibility="collapsed")
         respuestas[q["id"]]=str(int(val)) if q["id"]=="d2" else val
-
     enviar=st.form_submit_button("ENVIAR EXAMEN",use_container_width=True)
 
 if enviar:
@@ -286,7 +246,6 @@ if enviar:
     if not grupo: st.error("Selecciona tu grupo."); st.stop()
     puntos,total10=corregir(respuestas)
     faltas,tildes=detectar_ortografia([v for v in respuestas.values() if isinstance(v,str)])
-    # La parte automática vale exactamente 9 puntos. Los errores NO descuentan.
     nota9=round(total10*0.9,2)
     fila={"name":nombre.strip(),"group":grupo,"date":datetime.now().strftime("%Y-%m-%d %H:%M:%S"),**{k:round(v,2) for k,v in puntos.items()},"nota_sobre_9":nota9,"faltas_ortografia":faltas,"faltas_tildes":tildes,"produccion_escrita_pendiente":"Sí · hasta +1 punto"}
     try: guardar_csv(fila)
