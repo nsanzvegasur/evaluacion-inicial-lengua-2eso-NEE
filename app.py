@@ -212,7 +212,7 @@ def generar_perfil(datos):
 # =========================================================
 
 st.set_page_config(
-    page_title="Evaluación Inicial Lengua 2.º ESO",
+    page_title="Evaluación Inicial Lengua 2.º ESO*",
     page_icon="📚",
     layout="centered",
 )
