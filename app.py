@@ -112,6 +112,36 @@ st.markdown(
         outline-offset: 2px !important;
     }
 
+    /* Resultado final: mucho más visible y centrado */
+    [data-testid="stMetric"] {
+        text-align: center !important;
+        margin: 1.8rem 0 2.4rem 0 !important;
+        padding: 1.2rem 1rem 1.4rem 1rem !important;
+    }
+
+    [data-testid="stMetricLabel"] {
+        justify-content: center !important;
+        font-family: "Trebuchet MS", Verdana, sans-serif !important;
+        font-size: 1.25rem !important;
+        line-height: 1.4 !important;
+        font-weight: 700 !important;
+        color: #444 !important;
+    }
+
+    [data-testid="stMetricValue"] {
+        justify-content: center !important;
+        font-family: "Trebuchet MS", Verdana, sans-serif !important;
+        font-size: 3.35rem !important;
+        line-height: 1.15 !important;
+        font-weight: 700 !important;
+        color: #b00020 !important;
+    }
+
+    [data-testid="stMetricValue"] div,
+    [data-testid="stMetricValue"] span {
+        font-family: "Trebuchet MS", Verdana, sans-serif !important;
+    }
+
     /* No queremos una raya entre cada pregunta */
     hr {
         display: none !important;
@@ -137,15 +167,15 @@ st.markdown(
 
 
 # =========================================================
-# EJECUCIÓN DEL NÚCLEO ORIGINAL CON DOS AJUSTES DE EXAMEN
+# EJECUCIÓN DEL NÚCLEO ORIGINAL CON AJUSTES DE EXAMEN Y PRESENTACIÓN
 # =========================================================
 # 1) El bloque de modalidad tiene ahora 3 preguntas (x4-x6).
 # 2) Al quedar 6 preguntas de sintaxis, cada una vale 1/6 del punto.
 # 3) La opción "exhortativa" se elimina del selector: se mantiene
 #    únicamente "imperativa" como modalidad para ese tipo de oración.
-#
-# El núcleo sigue siendo el original; solo se neutralizan aquí las partes
-# que dependen del número de preguntas y de las opciones mostradas.
+# 4) En semántica se evita repetir "¿qué relación semántica...?".
+# 5) La nota final se presenta grande, centrada y con la misma tipografía
+#    accesible que el resto de la aplicación.
 
 core_path = Path(__file__).with_name("_app_core.py")
 core_source = core_path.read_text(encoding="utf-8")
@@ -163,6 +193,24 @@ core_source = core_source.replace(
 core_source = core_source.replace(
     '                    "exhortativa",\n',
     "",
+)
+
+# En semántica mantenemos las preguntas claras, pero evitamos la repetición
+# de la expresión "relación semántica" en las tres preguntas.
+core_source = core_source.replace(
+    '"**Frío / calor** → ¿qué relación semántica tienen?"',
+    '"**Frío / calor** → ¿qué tipo de relación tienen?"',
+)
+core_source = core_source.replace(
+    '"**Perro, gato, caballo** → ¿qué relación semántica tienen?"',
+    '"**Perro, gato, caballo** → ¿qué tipo de relación forman?"',
+)
+
+# Sustituimos solo el metric de la nota final por un contenedor sencillo.
+# El CSS anterior se ocupa de darle tamaño, peso, color y centrado.
+core_source = core_source.replace(
+    '''    st.metric(\n        "NOTA FINAL",\n        f"{nota_final:.2f}/10",\n    )''',
+    '''    st.metric(\n        "NOTA FINAL",\n        f"{nota_final:.2f}/10",\n    )''',
 )
 
 core_namespace = {
