@@ -19,4 +19,11 @@ source = source.replace(
     ""
 )
 
+# En semántica se resaltan en rojo las palabras o grupos de palabras,
+# no la indicación "relación semántica".
+source = source.replace(
+    "st.markdown(f\"<span>{q['elemento']}</span> — <span class='rojo'>relación semántica</span>\",unsafe_allow_html=True)",
+    "st.markdown(f\"<span class='rojo'>{q['elemento']}</span>\",unsafe_allow_html=True)"
+)
+
 exec(compile(source, str(core), "exec"), {"__name__": "__main__", "__file__": str(core)})
