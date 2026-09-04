@@ -32,6 +32,7 @@ h3 { font-size: 1.4rem !important; }
 .ayuda { border-left: 5px solid #777; padding: .75rem 1rem; margin: .8rem 0 1.2rem; font-size: 1.05rem; }
 .nota9 { text-align:center; font-size: 2.5rem; font-weight: 800; margin: 1rem 0; }
 .aviso { border: 2px solid #777; border-radius: 10px; padding: 1rem; font-size: 1.12rem; }
+.poema-titulo { text-align: center; color: #c00000; font-weight: 700; font-size: 1.35rem; margin: .5rem 0 1rem; }
 textarea, input { font-size: 1.08rem !important; }
 </style>
 """, unsafe_allow_html=True)
@@ -212,7 +213,9 @@ with st.form("examen_2eso_nee"):
         respuestas[q["id"]]=st.selectbox("",opciones_t,key=q["id"],label_visibility="collapsed")
     st.markdown('<div class="separador"></div>',unsafe_allow_html=True)
 
-    bloque_html("<h2>5. Literatura — 2 puntos</h2>" + EXAM["literatura"]["poema"].replace("\n","<br>"))
+    bloque_html("<h2>5. Literatura — 2 puntos</h2>")
+    st.markdown('<div class="poema-titulo">POEMA</div>', unsafe_allow_html=True)
+    st.markdown(EXAM["literatura"]["poema"].replace("\n","<br>"), unsafe_allow_html=True)
     for q, opciones in zip(EXAM["literatura"]["preguntas"],[ ["","1","2","3","4","5","6","7","8"],["","arte menor","arte mayor"],None,["","asonante","consonante"],None,None ]):
         st.markdown(rojo_marcadores(q["enunciado"]),unsafe_allow_html=True)
         if q["id"]=="l3": val=st.text_input("",help="Puedes escribir el esquema métrico.",key=q["id"],label_visibility="collapsed")
@@ -222,11 +225,17 @@ with st.form("examen_2eso_nee"):
     st.markdown('<div class="separador"></div>',unsafe_allow_html=True)
 
     bloque_html("<h2>6. Sintaxis — 1 punto</h2>")
-    for q in EXAM["sintaxis"]:
+    st.markdown('<div class="poema-titulo">1. DISTINGUIR FRASE U ORACIÓN</div>',unsafe_allow_html=True)
+    for q in EXAM["sintaxis"][:3]:
         st.markdown(f"<span class='rojo'>{q['frase']}</span>",unsafe_allow_html=True)
-        st.markdown(rojo_marcadores(q["enunciado"]),unsafe_allow_html=True)
         if q["id"] in ("x1","x2","x3"): ops=["","frase","oración"]
         else: ops=["","enunciativa","interrogativa","exclamativa","desiderativa","exhortativa","imperativa"]
+        respuestas[q["id"]]=st.selectbox("",ops,key=q["id"],label_visibility="collapsed")
+    st.markdown('<div class="separador"></div>',unsafe_allow_html=True)
+    st.markdown('<div class="poema-titulo">2. MODALIDAD ORACIONAL</div>',unsafe_allow_html=True)
+    for q in EXAM["sintaxis"][3:]:
+        st.markdown(f"<span class='rojo'>{q['frase']}</span>",unsafe_allow_html=True)
+        ops=["","enunciativa","interrogativa","exclamativa","desiderativa","exhortativa","imperativa"]
         respuestas[q["id"]]=st.selectbox("",ops,key=q["id"],label_visibility="collapsed")
     st.markdown('<div class="separador"></div>',unsafe_allow_html=True)
 
