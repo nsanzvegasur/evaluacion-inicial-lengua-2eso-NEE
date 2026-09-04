@@ -42,7 +42,7 @@ source = source.replace(
 # enunciados, textos, selectores, campos de respuesta, botones y resultados.
 source = source.replace(
     "st.markdown(\"\"\"\n<style>",
-    "st.markdown(\"\"\"\n<style>\n/* Letra grande para toda la adaptación NNEE */\nhtml, body, [class*=\"css\"], .stApp { font-size: 1.35rem !important; }\np, li, label, .stMarkdown, .stTextInput, .stSelectbox, .stTextArea, .stNumberInput, .stCaption { font-size: 1.3rem !important; line-height: 1.65 !important; }\nh1 { font-size: 2.7rem !important; line-height: 1.25 !important; }\nh2 { font-size: 2.05rem !important; line-height: 1.3 !important; }\nh3 { font-size: 1.65rem !important; line-height: 1.35 !important; }\ninput, textarea, [data-baseweb=\"select\"], button { font-size: 1.3rem !important; line-height: 1.5 !important; }\n.stButton button, .stFormSubmitButton button { min-height: 3.2rem !important; }\n")
+    "st.markdown(\"\"\"\n<style>\n/* Letra grande para toda la adaptación NNEE */\nhtml, body, [class*=\"css\"], .stApp { font-size: 1.35rem !important; }\np, li, label, .stMarkdown, .stTextInput, .stSelectbox, .stTextArea, .stNumberInput, .stCaption { font-size: 1.3rem !important; line-height: 1.65 !important; }\nh1 { font-size: 2.7rem !important; line-height: 1.25 !important; }\nh2 { font-size: 2.05rem !important; line-height: 1.3 !important; }\nh3 { font-size: 1.65rem !important; line-height: 1.35 !important; }\ninput, textarea, [data-baseweb=\"select\"], button { font-size: 1.3rem !important; line-height: 1.5 !important; }\n.stButton button, .stFormSubmitButton button { min-height: 3.2rem !important; }\n"
 )
 
 exec(compile(source, str(core), "exec"), {"__name__": "__main__", "__file__": str(core)})
