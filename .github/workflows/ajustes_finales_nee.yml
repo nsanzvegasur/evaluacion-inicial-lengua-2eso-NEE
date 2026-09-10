@@ -1,0 +1,46 @@
+name: Ajustes finales NNEE
+on:
+  push:
+    paths:
+      - '.github/workflows/ajustes_finales_nee.yml'
+permissions:
+  contents: write
+jobs:
+  ajustar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      - name: Ajustar descarga y Classroom
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p = Path('_app_core.py')
+          s = p.read_text(encoding='utf-8')
+          old = '    st.download_button("Descargar resultado CSV",csv_bytes(fila),file_name="Resultado_2ESO_NEE.csv",mime="text/csv",use_container_width=True)\n'
+          if old not in s:
+              raise SystemExit('No se encontró exactamente el botón CSV; no se modifica el archivo.')
+          s = s.replace(old, '', 1)
+          old_excel = '    st.download_button("Descargar resultado Excel",excel_bytes(fila),file_name="Resultado_2ESO_NEE.xlsx",mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",use_container_width=True)'
+          new_excel = '    st.download_button("📊 Descargar resultado Excel",excel_bytes(fila),file_name="Resultado_2ESO_NEE.xlsx",mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",use_container_width=True,type="primary")'
+          if old_excel not in s:
+              raise SystemExit('No se encontró exactamente el botón Excel; no se modifica el archivo.')
+          s = s.replace(old_excel, new_excel, 1)
+          old_classroom = '    st.markdown("Esta evaluación está lista para descargar y entregar en Classroom.")'
+          new_classroom = '    st.markdown("Esta evaluación está lista para descargar y entregar en **Classroom**.")'
+          if old_classroom not in s:
+              raise SystemExit('No se encontró exactamente el texto de Classroom; no se modifica el archivo.')
+          s = s.replace(old_classroom, new_classroom, 1)
+          p.write_text(s, encoding='utf-8')
+          PY
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add _app_core.py
+          git commit -m "Ocultar CSV y destacar descarga Excel y Classroom"
+          git push
+      - name: Eliminar workflow temporal
+        run: |
+          git rm .github/workflows/ajustes_finales_nee.yml
+          git commit -m "Eliminar workflow temporal de ajustes NNEE"
+          git push
