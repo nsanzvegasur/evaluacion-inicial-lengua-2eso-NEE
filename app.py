@@ -7,9 +7,9 @@ from pathlib import Path
 core = Path(__file__).with_name("_app_core.py")
 source = core.read_text(encoding="utf-8")
 
-# Título específico de la adaptación NNEE.
+# El título del núcleo ya incluye NNEE; se mantiene una sola vez.
 source = source.replace(
-    "Evaluación inicial de Lengua — 2.º ESO",
+    "Evaluación inicial de Lengua — 2.º ESO · NNEE",
     "Evaluación inicial de Lengua — 2.º ESO · NNEE"
 )
 
