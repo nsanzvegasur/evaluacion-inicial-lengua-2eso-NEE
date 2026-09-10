@@ -6,16 +6,13 @@ EXAMEN = {
         # ============================================================
 
         "comprension": {
-            "texto": """El tren llegó a la estación muy temprano.
+            "texto": """El tren de madrugada recorría lentamente la línea hacia la ciudad. La niebla cubría los campos y apenas dejaba ver el paisaje. En cada estación, el convoy se detenía unos segundos y volvía a avanzar con un chirrido metálico.
 
-La niebla cubría los campos y apenas se veía el paisaje.
+En uno de los vagones, un hombre joven miraba por la ventana sin hablar. Sujetaba una mochila y parecía cansado. A su lado, una anciana dormía profundamente. El silencio dentro del vagón era extraño, como si todos evitaran mirarse.
 
-En un vagón viajaban un hombre joven y una anciana.
-El hombre llevaba una mochila y parecía cansado.
-La anciana dormía.
+Cuando el tren llegó a la estación final, la luz del amanecer comenzó a aparecer entre los edificios. El viajero bajó lentamente, respiró hondo y caminó sin prisa hacia la salida. La anciana nunca salió de aquel tren.
 
-Cuando llegaron a la última estación, el hombre bajó del tren.
-Era el comienzo de una nueva vida para él.""",
+El viajero sintió que aquel día iba a ser el primero de su nueva vida, que todo había cambiado, que era un inicio donde no podía cometer los mismos errores. Aquella ciudad nueva era un enorme conjunto de posibilidades preparada para ser explotada.""",
 
             "preguntas": [
                 {
