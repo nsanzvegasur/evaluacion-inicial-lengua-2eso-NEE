@@ -10,7 +10,7 @@ source = core.read_text(encoding="utf-8")
 # Título específico de la adaptación NNEE.
 source = source.replace(
     "Evaluación inicial de Lengua — 2.º ESO",
-    "Evaluación inicial de Lengua — 2.º ESO · NNEE"
+    "Evaluación inicial de Lengua — 2.º ESO"
 )
 
 # Se elimina el aviso/botón de ayuda general del principio.
