@@ -1,27 +1,41 @@
 # Punto de entrada estable de la aplicación NNEE.
-# Ejecuta directamente el núcleo de la evaluación adaptada.
+# Se ejecuta el núcleo directamente, aplicando únicamente los ajustes
+# específicos de presentación de esta versión NNEE.
 from pathlib import Path
+
 
 core = Path(__file__).with_name("_app_core.py")
 source = core.read_text(encoding="utf-8")
 
-# Elimina cualquier resto del monitor de pestañas y deja la aplicación
-# funcionando como antes de esa modificación.
-source = source.replace('import streamlit.components.v1 as components\n', '')
-source = source.replace('from pathlib import Path\n', '')
-source = source.replace('TAB_MONITOR = components.declare_component("tab_monitor", path=str(Path(__file__).parent / "tab_monitor"))\n', '')
-source = source.replace('if "cambios_pestana" not in st.session_state:\n    st.session_state.cambios_pestana = 0\n', '')
-source = source.replace('evento_pestana = TAB_MONITOR(key="monitor_pestana")\nif isinstance(evento_pestana, dict):\n    nuevo = int(evento_pestana.get("count", 0) or 0)\n    if nuevo > st.session_state.cambios_pestana:\n        st.session_state.cambios_pestana = nuevo\nif not st.session_state.get("enviado") and st.session_state.cambios_pestana > 0:\n    if st.session_state.cambios_pestana >= 3:\n        st.error("Se han detectado 3 cambios de pestaña o salida de la ventana. El examen se enviará automáticamente.")\n    else:\n        restante = 3 - st.session_state.cambios_pestana\n        st.warning(f"Cambio de pestaña detectado ({st.session_state.cambios_pestana}). Evita salir del examen. Tras {restante} cambio(s) más, el examen se enviará automáticamente.")\n', '')
-source = source.replace('evento_pestana = TAB_MONITOR(key="monitor_pestana")\nif isinstance(evento_pestana, dict):\n    try:\n        nuevo = int(evento_pestana.get("count", 0))\n        if nuevo > st.session_state.cambios_pestana:\n            st.session_state.cambios_pestana = nuevo\n    except (TypeError, ValueError):\n        pass\n\nif not st.session_state.get("enviado") and st.session_state.cambios_pestana > 0:\n    if st.session_state.cambios_pestana >= 3:\n        st.error("Se han detectado 3 cambios de pestaña o salida de la ventana. El examen se enviará automáticamente.")\n    else:\n        restante = 3 - st.session_state.cambios_pestana\n        st.warning(f"Cambio de pestaña detectado ({st.session_state.cambios_pestana}). Evita salir del examen. Tras {restante} cambio(s) más, el examen se enviará automáticamente.")\n\n', '')
-source = source.replace('    if int(fila.get("cambios_pestana", 0) or 0) > 0:\n        cambios=int(fila.get("cambios_pestana", 0) or 0)\n        st.warning(f"Durante el examen se detectaron {cambios} cambios de pestaña o salida de la ventana.")\n', '')
-source = source.replace('    if int(fila.get("cambios_pestana", 0) or 0) > 0:\n        cambios = int(fila.get("cambios_pestana", 0) or 0)\n        st.warning(f"Durante el examen se detectaron {cambios} cambios de pestaña o salida de la ventana.")\n', '')
-source = source.replace(',"cambios_pestana":st.session_state.cambios_pestana', '')
-source = source.replace(',"cambios_pestana": st.session_state.cambios_pestana', '')
-source = source.replace('    "cambios_pestana": st.session_state.cambios_pestana,\n', '')
-source = source.replace(', cambios_pestana=st.session_state.cambios_pestana', '')
-source = source.replace(',st.session_state.cambios_pestana', '')
-source = source.replace('"cambios_pestana"', '"__eliminado_cambios_pestana__"')
-source = source.replace('excel_bytes(fila,st.session_state.cambios_pestana)', 'excel_bytes(fila)')
-source = source.replace('if enviar or st.session_state.cambios_pestana >= 3:', 'if enviar:')
+# Título específico de la adaptación NNEE.
+source = source.replace(
+    "Evaluación inicial de Lengua — 2.º ESO",
+    "Evaluación inicial de Lengua — 2.º ESO · NNEE"
+)
+
+# Se elimina el aviso/botón de ayuda general del principio.
+source = source.replace(
+    "st.markdown('<div class=\"ayuda\"><b>AYUDA DURANTE EL EXAMEN:</b> puedes pulsar el botón de ayuda de cada pregunta para ver cómo debes introducir la respuesta.</div>', unsafe_allow_html=True)\n",
+    ""
+)
+
+# En semántica se resaltan en rojo las palabras o grupos de palabras,
+# no la indicación "relación semántica".
+source = source.replace(
+    "st.markdown(f\"<span>{q['elemento']}</span> — <span class='rojo'>relación semántica</span>\",unsafe_allow_html=True)",
+    "st.markdown(f\"<span class='rojo'>{q['elemento']}</span>\",unsafe_allow_html=True)"
+)
+
+# El poema queda centrado y con una separación visual clara antes de la primera pregunta.
+source = source.replace(
+    "st.markdown(EXAM[\"literatura\"][\"poema\"].replace(\"\\n\",\"<br>\"), unsafe_allow_html=True)",
+    "st.markdown('<div style=\"text-align:center; line-height:1.9; margin-bottom:2.5rem;\">' + EXAM[\"literatura\"][\"poema\"].replace(\"\\n\",\"<br>\") + '</div>', unsafe_allow_html=True)"
+)
+
+# En diálogo, el primer ejercicio incluye el aviso para separar los interlocutores por comas.
+source = source.replace(
+    "for q in EXAM[\"dialogo\"][\"preguntas\"]:\n        st.markdown(rojo_marcadores(q[\"enunciado\"]),unsafe_allow_html=True)",
+    "for q in EXAM[\"dialogo\"][\"preguntas\"]:\n        st.markdown(rojo_marcadores(q[\"enunciado\"]),unsafe_allow_html=True)\n        if q[\"id\"] == \"d1\":\n            st.markdown('<div class=\"ayuda\"><b>Aviso:</b> separa las respuestas por comas.</div>', unsafe_allow_html=True)"
+)
 
 exec(compile(source, str(core), "exec"), {"__name__": "__main__", "__file__": str(core)})
