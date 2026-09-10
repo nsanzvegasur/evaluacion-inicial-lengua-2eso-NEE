@@ -17,6 +17,9 @@ st.set_page_config(page_title="Evaluación inicial Lengua 2.º ESO NNEE", page_i
 CSV_FILE = "results.csv"
 EXAM = EXAMEN["2ESO_NEE"]
 TAB_MONITOR = components.declare_component("tab_monitor", path=str(Path(__file__).parent / "tab_monitor"))
+if "cambios_pestana" not in st.session_state:
+    st.session_state.cambios_pestana = 0
+TAB_MONITOR = components.declare_component("tab_monitor", path=str(Path(__file__).parent / "tab_monitor"))
 
 if "cambios_pestana" not in st.session_state:
     st.session_state.cambios_pestana = 0
@@ -152,6 +155,17 @@ st.markdown('<div class="titulo">Evaluación inicial de Lengua — 2.º ESO · N
 st.markdown('<div class="subtitulo">Lengua Castellana y Literatura · Curso 2026-2027</div>', unsafe_allow_html=True)
 evento_pestana = TAB_MONITOR(key="monitor_pestana")
 if isinstance(evento_pestana, dict):
+    nuevo = int(evento_pestana.get("count", 0) or 0)
+    if nuevo > st.session_state.cambios_pestana:
+        st.session_state.cambios_pestana = nuevo
+if not st.session_state.get("enviado") and st.session_state.cambios_pestana > 0:
+    if st.session_state.cambios_pestana >= 3:
+        st.error("Se han detectado 3 cambios de pestaña o salida de la ventana. El examen se enviará automáticamente.")
+    else:
+        restante = 3 - st.session_state.cambios_pestana
+        st.warning(f"Cambio de pestaña detectado ({st.session_state.cambios_pestana}). Evita salir del examen. Tras {restante} cambio(s) más, el examen se enviará automáticamente.")
+evento_pestana = TAB_MONITOR(key="monitor_pestana")
+if isinstance(evento_pestana, dict):
     try:
         nuevo = int(evento_pestana.get("count", 0))
         if nuevo > st.session_state.cambios_pestana:
@@ -173,6 +187,9 @@ if st.session_state.get("enviado"):
     st.markdown(f'<div class="nota9">NOTA DE ESTA PARTE · SOBRE 9<br>{nota9:.2f} / 9</div>',unsafe_allow_html=True)
     st.markdown('<div class="aviso"><b>IMPORTANTE:</b> has terminado esta parte de la evaluación. Esta prueba automática vale <b>9 puntos</b>. Ahora debes continuar con la <b>producción escrita</b>, que se corregirá aparte y supondrá hasta <b>1 punto adicional</b>.</div>',unsafe_allow_html=True)
     st.write(f"Fecha y hora: {fila['date']}")
+    if int(fila.get("cambios_pestana", 0) or 0) > 0:
+        cambios=int(fila.get("cambios_pestana", 0) or 0)
+        st.warning(f"Durante el examen se detectaron {cambios} cambios de pestaña o salida de la ventana.")
     if int(fila.get("cambios_pestana", 0) or 0) > 0:
         cambios = int(fila.get("cambios_pestana", 0) or 0)
         st.warning(f"Durante el examen se detectaron {cambios} cambios de pestaña o salida de la ventana.")
