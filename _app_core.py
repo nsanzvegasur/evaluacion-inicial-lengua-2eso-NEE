@@ -167,9 +167,8 @@ if st.session_state.get("enviado"):
         estado="consolidado" if porcentaje>=0.7 else "en proceso" if porcentaje>=0.5 else "necesita refuerzo"
         st.write(f"• {nombres[c]}: {estado}.")
     st.markdown("### Descargar resultados")
-    st.download_button("Descargar resultado CSV",csv_bytes(fila),file_name="Resultado_2ESO_NEE.csv",mime="text/csv",use_container_width=True)
-    st.download_button("Descargar resultado Excel",excel_bytes(fila),file_name="Resultado_2ESO_NEE.xlsx",mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",use_container_width=True)
-    st.markdown("Esta evaluación está lista para descargar y entregar en Classroom.")
+    st.download_button("📊 Descargar resultado Excel",excel_bytes(fila),file_name="Resultado_2ESO_NEE.xlsx",mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",use_container_width=True,type="primary")
+    st.markdown("Esta evaluación está lista para descargar y entregar en **Classroom**.")
     if st.button("Volver al inicio",use_container_width=True): st.session_state.clear(); st.rerun()
     st.stop()
 
