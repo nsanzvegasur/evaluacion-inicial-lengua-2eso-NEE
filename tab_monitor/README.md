@@ -1,0 +1,1 @@
+Componente local para detectar cambios de pestaña o pérdida de visibilidad durante la evaluación.

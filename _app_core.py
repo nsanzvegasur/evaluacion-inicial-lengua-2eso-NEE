@@ -4,9 +4,11 @@ import os
 import re
 import unicodedata
 from datetime import datetime
+from pathlib import Path
 
 import pandas as pd
 import streamlit as st
+import streamlit.components.v1 as components
 from openpyxl import Workbook
 
 from examen2ESO_NEE import EXAMEN
@@ -14,6 +16,10 @@ from examen2ESO_NEE import EXAMEN
 st.set_page_config(page_title="Evaluación inicial Lengua 2.º ESO NNEE", page_icon="📚", layout="centered")
 CSV_FILE = "results.csv"
 EXAM = EXAMEN["2ESO_NEE"]
+TAB_MONITOR = components.declare_component("tab_monitor", path=str(Path(__file__).parent / "tab_monitor"))
+
+if "cambios_pestana" not in st.session_state:
+    st.session_state.cambios_pestana = 0
 
 st.markdown("""
 <style>
@@ -144,6 +150,21 @@ def guardar_csv(fila):
 
 st.markdown('<div class="titulo">Evaluación inicial de Lengua — 2.º ESO · NNEE</div>', unsafe_allow_html=True)
 st.markdown('<div class="subtitulo">Lengua Castellana y Literatura · Curso 2026-2027</div>', unsafe_allow_html=True)
+evento_pestana = TAB_MONITOR(key="monitor_pestana")
+if isinstance(evento_pestana, dict):
+    try:
+        nuevo = int(evento_pestana.get("count", 0))
+        if nuevo > st.session_state.cambios_pestana:
+            st.session_state.cambios_pestana = nuevo
+    except (TypeError, ValueError):
+        pass
+
+if not st.session_state.get("enviado") and st.session_state.cambios_pestana > 0:
+    if st.session_state.cambios_pestana >= 3:
+        st.error("Se han detectado 3 cambios de pestaña o salida de la ventana. El examen se enviará automáticamente.")
+    else:
+        restante = 3 - st.session_state.cambios_pestana
+        st.warning(f"Cambio de pestaña detectado ({st.session_state.cambios_pestana}). Evita salir del examen. Tras {restante} cambio(s) más, el examen se enviará automáticamente.")
 
 if st.session_state.get("enviado"):
     fila=st.session_state["fila"]; puntos=st.session_state["puntos"]; nota9=st.session_state["nota9"]
@@ -152,6 +173,9 @@ if st.session_state.get("enviado"):
     st.markdown(f'<div class="nota9">NOTA DE ESTA PARTE · SOBRE 9<br>{nota9:.2f} / 9</div>',unsafe_allow_html=True)
     st.markdown('<div class="aviso"><b>IMPORTANTE:</b> has terminado esta parte de la evaluación. Esta prueba automática vale <b>9 puntos</b>. Ahora debes continuar con la <b>producción escrita</b>, que se corregirá aparte y supondrá hasta <b>1 punto adicional</b>.</div>',unsafe_allow_html=True)
     st.write(f"Fecha y hora: {fila['date']}")
+    if int(fila.get("cambios_pestana", 0) or 0) > 0:
+        cambios = int(fila.get("cambios_pestana", 0) or 0)
+        st.warning(f"Durante el examen se detectaron {cambios} cambios de pestaña o salida de la ventana.")
     st.markdown("### Resultados por áreas")
     maximos={"comprension":2,"morfologia":2.5,"semantica":1,"textos":1.5,"literatura":2,"sintaxis":1}
     nombres={"comprension":"Comprensión","morfologia":"Morfología","semantica":"Semántica","textos":"Textos","literatura":"Literatura","sintaxis":"Sintaxis"}
@@ -260,14 +284,14 @@ with st.form("examen_2eso_nee"):
         respuestas[q["id"]]=str(int(val)) if q["id"]=="d2" else val
     enviar=st.form_submit_button("ENVIAR EXAMEN",use_container_width=True)
 
-if enviar:
+if enviar or st.session_state.cambios_pestana >= 3:
     if not nombre.strip(): st.error("Escribe tu nombre y apellidos."); st.stop()
     if not grupo: st.error("Selecciona tu grupo."); st.stop()
     puntos,total10=corregir(respuestas)
     faltas,tildes=detectar_ortografia([v for v in respuestas.values() if isinstance(v,str)])
     nota9=round(total10*0.9,2)
-    fila={"name":nombre.strip(),"group":grupo,"date":datetime.now().strftime("%Y-%m-%d %H:%M:%S"),**{k:round(v,2) for k,v in puntos.items()},"nota_final_sobre_9":nota9,"faltas_ortografia":faltas,"faltas_tildes":tildes,"produccion_escrita_pendiente":"Sí · hasta +1 punto"}
+    fila={"name":nombre.strip(),"group":grupo,"date":datetime.now().strftime("%Y-%m-%d %H:%M:%S"),**{k:round(v,2) for k,v in puntos.items()},"nota_final_sobre_9":nota9,"faltas_ortografia":faltas,"faltas_tildes":tildes,"produccion_escrita_pendiente":"Sí · hasta +1 punto", "cambios_pestana":st.session_state.cambios_pestana}
     try: guardar_csv(fila)
     except Exception as e: st.error("No se pudo guardar el resultado."); st.exception(e); st.stop()
-    st.session_state.update(enviado=True,fila=fila,puntos=puntos,nota9=nota9,faltas=faltas,tildes=tildes)
+    st.session_state.update(enviado=True,fila=fila,puntos=puntos,nota9=nota9,faltas=faltas,tildes=tildes,respuestas=respuestas)
     st.rerun()

@@ -59,6 +59,7 @@ source = source.replace(
     ws["A3"]="Alumno"; ws["B3"]=fila.get("name","")
     ws["A4"]="Grupo"; ws["B4"]=fila.get("group","")
     ws["A5"]="Fecha y hora"; ws["B5"]=fila.get("date","")
+    ws["A6"]="Cambios de pestaña detectados"; ws["B6"]=fila.get("cambios_pestana",0)
     ws["A7"]="NOTA DE ESTA PARTE (SOBRE 9)"; ws["B7"]=fila.get("nota_final_sobre_9",0)
     ws["A8"]="Nota antes del descuento por ortografía (sobre 9)"; ws["B8"]=fila.get("nota_final_sobre_9",0)
     ws["A9"]="Descuento por ortografía"; ws["B9"]=0
